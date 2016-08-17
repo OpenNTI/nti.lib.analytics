@@ -1,0 +1,8 @@
+{
+	"presets": [
+		"es2015",
+		"stage-1"
+	],
+	"compact": false,
+	"sourceMaps": "both"
+}
