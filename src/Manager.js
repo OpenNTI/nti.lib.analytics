@@ -209,12 +209,7 @@ export default class Manager extends EventEmitter {
 			return Promise.resolve('No events in the queue.');
 		}
 
-		// yank everything out of the queue
-		const events = this.queue;
-		this.queue = [];
-		this.clearSerialized();
-
-		const separated = events.reduce((acc, item) => ((item.finished ? acc.finished : acc.unfinished).push(item), acc), {finished: [], unfinished: []});
+		const separated = this.queue.reduce((acc, item) => ((item.finished ? acc.finished : acc.unfinished).push(item), acc), {finished: [], unfinished: []});
 
 		// return unfinished events to the queue
 		this.queue.push(...separated.unfinished);
@@ -226,6 +221,10 @@ export default class Manager extends EventEmitter {
 
 
 		const data = items.map(item => item.getData ? item.getData() : item);
+
+		//We're going to post, clear the queue
+		this.queue = [];
+		this.clearSerialized();
 
 		return postAnalytics(data)
 
