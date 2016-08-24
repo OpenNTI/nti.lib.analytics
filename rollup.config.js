@@ -7,9 +7,12 @@ export default {
 	format: 'cjs',
 	dest: 'lib/index.js',
 	sourceMap: true,
+	exports: 'named',
 	plugins: [
 		babel({ exclude: 'node_modules/**' }),
-		commonjs(),
+		commonjs({
+			ignoreGlobal: true
+		}),
 		json()
 	]
 };
