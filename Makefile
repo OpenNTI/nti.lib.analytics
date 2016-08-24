@@ -20,7 +20,7 @@ test: node_modules check
 clean:
 	@rm -rf $(LIBDIR)
 
-lib:
+lib: clean
 	@rollup -c
 
 # lib: $(LIB)
