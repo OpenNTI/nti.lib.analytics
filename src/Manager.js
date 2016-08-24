@@ -225,7 +225,7 @@ export default class Manager extends EventEmitter {
 		}
 
 
-		const data = items.map(item => item.getData());
+		const data = items.map(item => item.getData ? item.getData() : item);
 
 		return postAnalytics(data)
 
