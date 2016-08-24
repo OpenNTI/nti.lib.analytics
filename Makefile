@@ -1,7 +1,7 @@
 .PHONY: clean check test
 
-SRC = $(shell find src -name '*.js')
-LIB = $(SRC:src/%.js=lib/%.js)
+# SRC = $(shell find src -name '*.js')
+# LIB = $(SRC:src/%.js=lib/%.js)
 LIBDIR = lib
 
 all: node_modules lib
@@ -20,7 +20,10 @@ test: node_modules check
 clean:
 	@rm -rf $(LIBDIR)
 
-lib: $(LIB)
-lib/%.js: src/%.js
-	@mkdir -p $(@D)
-	babel $< -o $@
+lib:
+	@rollup -c
+
+# lib: $(LIB)
+# lib/%.js: src/%.js
+# 	@mkdir -p $(@D)
+# 	babel $< -o $@
