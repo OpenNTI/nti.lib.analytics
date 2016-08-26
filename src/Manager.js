@@ -210,22 +210,25 @@ export default class Manager extends EventEmitter {
 			return Promise.resolve('No events in the queue.');
 		}
 
-		const separated = this.queue.reduce((acc, item) => ((item.finished ? acc.finished : acc.unfinished).push(item), acc), {finished: [], unfinished: []});
+		const bins = {finished: [], unfinished: []};
+		const intoBins = (acc, item) => ((item.finished ? acc.finished : acc.unfinished).push(item), acc);
 
-		// return unfinished events to the queue
-		this.queue.push(...separated.unfinished);
-		const items = separated.finished;
+		const {unfinished, finished: items} = this.queue.reduce(intoBins, bins);
+
+
+		const data = items.map(item => item.getData ? item.getData() : item);
 
 		if (items.length === 0) {
 			return Promise.resolve('No finished events in the queue');
 		}
 
 
-		const data = items.map(item => item.getData ? item.getData() : item);
 
 		//We're going to post, clear the queue
-		this.queue = [];
 		this.clearSerialized();
+		// return unfinished events to the queue
+		this.queue = [...unfinished];
+		this.serialize();
 
 		return postAnalytics(data)
 
