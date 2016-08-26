@@ -70,7 +70,8 @@ export default class Manager extends EventEmitter {
 	 * @returns {void}
 	 */
 	enqueueEvents (...events) {
-		this.queue = [...this.queue, ...events];
+		const newEvents = events.filter(x => !this.queue.includes(x));
+		this.queue = [...this.queue, ...newEvents];
 		this.serialize();
 	}
 
