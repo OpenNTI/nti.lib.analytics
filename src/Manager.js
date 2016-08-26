@@ -39,7 +39,7 @@ export default class Manager extends EventEmitter {
 
 
 	start (event) {
-		logger.debug('Analytics Store received event: %s, %O', event.MimeType, event);
+		logger.debug('Analytics Store received event: %s, %o', event.MimeType, event);
 		const {MimeType} = (event || {});
 		if (!isKnown(MimeType)) {
 			throw new Error('emitEvent action called with unrecognized MimeType. Stop it.'.concat(MimeType));

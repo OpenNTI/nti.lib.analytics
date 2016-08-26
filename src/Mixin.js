@@ -59,7 +59,6 @@ export default {
 		}
 
 		const {resourceId} = this[CURRENT_EVENT];
-		this[CURRENT_EVENT].finish();
 
 		const contextFunction = this.analyticsContext || this.resolveContext;
 		return contextFunction(this.props)
