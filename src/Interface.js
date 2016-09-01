@@ -30,13 +30,13 @@ export function eventEnded (event) {
 }
 
 
-export function endSession () {
-	return wrap(() => manager.endSession());
+export function endSession (reason) {
+	return wrap(() => manager.endSession(reason));
 }
 
 
-export function resumeSession () {
-	return wrap(() => manager.resumeSession());
+export function resumeSession (reason) {
+	return wrap(() => manager.resumeSession(reason));
 }
 
 
