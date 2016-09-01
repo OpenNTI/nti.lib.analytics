@@ -35,6 +35,11 @@ export function endSession () {
 }
 
 
+export function resumeSession () {
+	return wrap(() => manager.resumeSession());
+}
+
+
 export function addResumeListener (fn) {
 	return wrap(() => manager.addResumeListener(fn));
 }
