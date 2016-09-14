@@ -1,3 +1,8 @@
+export readOnly from 'nti-commons/lib/object-define-readonly';
+export updateValue from 'nti-commons/lib/object-define-update-value';
+export definePublic from 'nti-commons/lib/object-define-public';
+export defineProtected from 'nti-commons/lib/object-define-protected';
+
 export function filterContextPath (context, resourceId) {
 	let first = context[0];
 	let last = context[context.length - 1];
@@ -37,21 +42,3 @@ export function toAnalyticsPath (context, resourceId) {
 
 
 export const isFunction = x => typeof x === 'function';
-
-
-export const readOnly = (value, enumerable = false) => ({configurable: true, enumerable, writable: false, value});
-
-
-export function updateValue (scope, key, value) {
-	const desc = Object.getOwnPropertyDescriptor(scope, key) || readOnly(value);
-	delete scope[key];
-	Object.defineProperty(scope, key, Object.assign({}, desc, {value}));
-}
-
-
-export const definePublic = (o) =>
-	Object.entries(o).reduce((out, [key, value]) => (out[key] = readOnly(value, true), out), {});
-
-
-export const defineProtected = (o) =>
-	Object.entries(o).reduce((out, [key, value]) => (out[key] = readOnly(value), out), {});
