@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import Idle from 'nti-commons/lib/Idle';
+import {Tasks} from 'nti-commons';
 import Logger from 'nti-util-logger';
 import {postAnalytics, endAnalyticsSession} from './Api';
 import {isKnown, WATCH_VIDEO} from './MimeTypes';
@@ -30,7 +30,7 @@ export default class Manager extends EventEmitter {
 	init (idleTimeout = THIRTY_MINUTES) {
 		this.startTimer();
 
-		const idle = this.idleMonitor = new Idle({ timeout: idleTimeout });
+		const idle = this.idleMonitor = new Tasks.Idle({ timeout: idleTimeout });
 		idle.on('idle', () => this.endSession('idle monitor'));
 		idle.on('active', () => this.resumeSession('no longer idle'));
 

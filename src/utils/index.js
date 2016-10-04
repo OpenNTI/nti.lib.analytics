@@ -1,7 +1,6 @@
-export readOnly from 'nti-commons/lib/object-define-readonly';
-export updateValue from 'nti-commons/lib/object-define-update-value';
-export definePublic from 'nti-commons/lib/object-define-public';
-export defineProtected from 'nti-commons/lib/object-define-protected';
+import {defineProtected, definePublic, defineReadOnly as readOnly, updateValue} from 'nti-commons';
+
+export {readOnly, updateValue, definePublic, defineProtected};
 
 export function filterContextPath (context, resourceId) {
 	let first = context[0];

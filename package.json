@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "node-uuid": "^1.4.7",
-    "nti-commons": "^1.0.33",
+    "nti-commons": "^2.0.0",
     "nti-lib-interfaces": "^1.8.1",
     "nti-lib-ntiids": "^1.0.2",
     "nti-util-logger": "^1.0.4",
