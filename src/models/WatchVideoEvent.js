@@ -6,8 +6,8 @@ import {definePublic, updateValue} from '../utils';
 
 export default class WatchVideoEvent extends Base {
 
-	constructor (resourceId, courseId, context, videoStartTime, maxDuration, hasTranscript) {
-		super(WATCH_VIDEO, (context || []).find(elem => isNTIID(elem)) || void 0, courseId);
+	constructor (resourceId, rootContextId, context, videoStartTime, maxDuration, hasTranscript) {
+		super(WATCH_VIDEO, rootContextId || (context || []).find(elem => isNTIID(elem)) || void 0);
 
 		Object.defineProperties(this, {
 			...definePublic({

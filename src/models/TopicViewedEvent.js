@@ -3,8 +3,8 @@ import {TOPIC_VIEWED} from '../MimeTypes';
 import {definePublic} from '../utils';
 
 export default class TopicViewedEvent extends Base {
-	constructor (topicId, courseId, startTime) {
-		super(TOPIC_VIEWED, null, courseId, startTime);
+	constructor (topicId, rootContextID, startTime) {
+		super(TOPIC_VIEWED, rootContextID, startTime);
 
 		Object.defineProperties(this, {
 			...definePublic({

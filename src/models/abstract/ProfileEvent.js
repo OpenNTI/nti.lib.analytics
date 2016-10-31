@@ -7,7 +7,7 @@ const NULLED = { toJSON: () => null };
 
 export default class ProfileEvent extends Base {
 	constructor (mimeType, entity, startTime) {
-		super(mimeType, NULLED, NULLED, startTime);
+		super(mimeType, NULLED, startTime);
 		Object.defineProperties(this, {
 			...definePublic({
 				ProfileEntity: entity

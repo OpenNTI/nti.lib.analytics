@@ -32,25 +32,31 @@ export default {
 		}
 	},
 
-	resourceLoaded (resourceId, courseId, eventMimeType) {
+	resourceLoaded (resourceId, rootContextId, eventMimeType) {
 		let assessmentId;
 		if (arguments.length > 3) {
-			[assessmentId, resourceId, courseId, eventMimeType] = [...arguments];
+			console.error('Do not alter argument signature!');//eslint-disable-line no-console
+			[assessmentId, resourceId, rootContextId, eventMimeType] = [...arguments];
+		}
+
+		if (Array.isArray(resourceId)) {
+			[assessmentId, resourceId] = resourceId;
 		}
 
 		// wait for resourceUnloaded to finish before creating the
 		// new event so we don't change this[CURRENT_EVENT] out from under us.
-		return this.resourceUnloaded().then(() => {
+		return this.resourceUnloaded()
+			.then(() => {
 
-			const Type = getModel(eventMimeType) || ResourceEvent; //Dangerous!
+				const Type = getModel(eventMimeType) || ResourceEvent; //Dangerous!
 
-			this[CURRENT_EVENT] = new Type(
-				decodeFromURI(resourceId),
-				courseId,
-				assessmentId);
+				this[CURRENT_EVENT] = new Type(
+					decodeFromURI(resourceId),
+					rootContextId,
+					assessmentId);
 
-			eventStarted(this[CURRENT_EVENT]);
-		});
+				eventStarted(this[CURRENT_EVENT]);
+			});
 	},
 
 	resourceUnloaded () {

@@ -29,7 +29,7 @@ describe('Analytics Mixin', () => {
 				.then(() => {
 					const event = thing[CURRENT_EVENT];
 					expect(event).toBeTruthy();
-					expect(event.course).toBe(SOME_COURSEINST);
+					expect(event.RootContextID).toBe(SOME_COURSEINST);
 					expect(event.resource_id).toBe(SOME_PAGE);
 					expect(event.MimeType).toBe(RESOURCE_VIEWED);
 
@@ -46,12 +46,12 @@ describe('Analytics Mixin', () => {
 		fakeInit();
 
 		Promise.resolve()
-			.then(() => thing1.resourceLoaded(SOME_ASSIGNMENT, SOME_PAGE, SOME_COURSEINST, ASSIGNMENT_VIEWED)
+			.then(() => thing1.resourceLoaded([SOME_ASSIGNMENT, SOME_PAGE], SOME_COURSEINST, ASSIGNMENT_VIEWED)
 				.then(() => {
 					const event = thing1[CURRENT_EVENT];
 					expect(event).toBeTruthy();
 
-					expect(event.course).toBe(SOME_COURSEINST);
+					expect(event.RootContextID).toBe(SOME_COURSEINST);
 					expect(event.ResourceId).toBe(SOME_ASSIGNMENT),
 					expect(event.ContentId).toBe(SOME_PAGE);
 					expect(event.MimeType).toBe(ASSIGNMENT_VIEWED);
@@ -59,12 +59,12 @@ describe('Analytics Mixin', () => {
 					event.finish();//cleanup event
 				})
 			)
-			.then(() => thing2.resourceLoaded(SOME_ASSIGNMENT, SOME_PAGE, SOME_COURSEINST, SELFASSESSMENT_VIEWED)
+			.then(() => thing2.resourceLoaded([SOME_ASSIGNMENT, SOME_PAGE], SOME_COURSEINST, SELFASSESSMENT_VIEWED)
 				.then(() => {
 					const event = thing2[CURRENT_EVENT];
 
 					expect(event).toBeTruthy();
-					expect(event.course).toBe(SOME_COURSEINST);
+					expect(event.RootContextID).toBe(SOME_COURSEINST);
 					expect(event.ResourceId).toBe(SOME_ASSIGNMENT),
 					expect(event.ContentId).toBe(SOME_PAGE);
 					expect(event.MimeType).toBe(SELFASSESSMENT_VIEWED);

@@ -1,8 +1,8 @@
 import ResourceEvent from './ResourceEvent';
 
 export default class ExternalResourceEvent extends ResourceEvent {
-	constructor (resourceId, courseId, contextPath) {
-		super(resourceId, courseId);
+	constructor (resourceId, rootContextID, contextPath) {
+		super(resourceId, rootContextID);
 
 		if (contextPath) {
 			this.setContextPath(contextPath);

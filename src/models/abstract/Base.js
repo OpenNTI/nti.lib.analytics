@@ -42,7 +42,7 @@ export default class Base {
 	}
 
 
-	constructor (mimeType, rootContextID, courseID, startTime) {
+	constructor (mimeType, RootContextID, startTime) {
 
 		if (!mimeType || !isKnown(mimeType)) {
 			console.warn('Unrecognized MimeType for analytics event: ' + mimeType); //eslint-disable-line no-console
@@ -66,8 +66,7 @@ export default class Base {
 			...definePublic({
 				startTime: startTime || Date.now(),
 				MimeType: mimeType || UNKNOWN_TYPE,
-				RootContextID: rootContextID || courseID,
-				course: courseID,
+				RootContextID,
 				timestamp: null,
 				'time_length': null,
 				'context_path': null

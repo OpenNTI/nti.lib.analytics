@@ -4,8 +4,8 @@ import {SELFASSESSMENT_VIEWED} from '../MimeTypes';
 import {definePublic} from '../utils';
 
 export default class AssessmentEvent extends Base {
-	constructor (contentId, courseId, assessmentId, mime) {
-		super(mime || SELFASSESSMENT_VIEWED, null, courseId);
+	constructor (contentId, rootContextID, assessmentId, mime) {
+		super(mime || SELFASSESSMENT_VIEWED, rootContextID);
 
 		if (!assessmentId) {
 			console.error('No Assessment ID for Assessment Viewed Analytics Event'); //eslint-disable-line no-console

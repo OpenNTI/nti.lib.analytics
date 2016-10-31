@@ -18,11 +18,10 @@ describe('Event: ResourceEvent', () => {
 			startTime: now,
 			MimeType: RESOURCE_VIEWED,
 			RootContextID: course,
-			course,
 			'resource_id': resourceId
 		});
 
-		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"${course}","course":"${course}","resource_id":"${resourceId}"}`);
+		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"${course}","resource_id":"${resourceId}"}`);
 
 		event.finish();
 		expect(Object.keys(event.getData()).includes('time_length')).toBeTruthy();

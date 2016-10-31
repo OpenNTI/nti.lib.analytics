@@ -21,8 +21,7 @@ describe('Event: WatchVideoEvent', () => {
 		const expected = {
 			startTime: now,
 			MimeType: WATCH_VIDEO,
-			RootContextID: context[1],
-			course,
+			RootContextID: course,
 			'context_path': context,
 			MaxDuration: maxDuration,
 			'resource_id': resourceId,
@@ -36,8 +35,7 @@ describe('Event: WatchVideoEvent', () => {
 			{
 				"startTime":${now},
 				"MimeType":"${WATCH_VIDEO}",
-				"RootContextID":"${context[1]}",
-				"course":"${course}",
+				"RootContextID":"${course}",
 				"MaxDuration":${maxDuration},
 				"resource_id":"${resourceId}",
 				"context_path":${JSON.stringify(context)},

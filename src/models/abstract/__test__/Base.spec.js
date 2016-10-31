@@ -10,16 +10,15 @@ describe('Event: Base', () => {
 
 	it ('Basic Shape', () => {
 		const now = Date.now();
-		const event = new Base(RESOURCE_VIEWED, 'abc', 'dude', now);
+		const event = new Base(RESOURCE_VIEWED, 'abc', now);
 
 		expect(event.getData()).toEqual({
 			startTime: now,
 			MimeType: RESOURCE_VIEWED,
-			RootContextID: 'abc',
-			course: 'dude'
+			RootContextID: 'abc'
 		});
 
-		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"abc","course":"dude"}`);
+		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"abc"}`);
 
 		event.finish();
 		expect(Object.keys(event.getData()).includes('time_length')).toBeTruthy();
@@ -29,7 +28,7 @@ describe('Event: Base', () => {
 
 
 	it ('halt() finishes and adds halted', () => {
-		const event = new Base(RESOURCE_VIEWED, 'abc', 'dude', Date.now());
+		const event = new Base(RESOURCE_VIEWED, 'abc', Date.now());
 		event.halt();
 
 		expect(event.halted).toBe(true);
@@ -40,7 +39,7 @@ describe('Event: Base', () => {
 
 
 	it ('setContextPath add/replaces "context_path"', () => {
-		const event = new Base(RESOURCE_VIEWED, 'abc', 'dude', Date.now());
+		const event = new Base(RESOURCE_VIEWED, 'abc', Date.now());
 		Base.freeHeartbeat(event);//don't leave the heartbeat running, but do not "finish" the event.
 		expect(event.context_path).toBeFalsy();
 		event.setContextPath(['a', 'b', 'c']);
@@ -53,7 +52,7 @@ describe('Event: Base', () => {
 	it ('getDuration returns "time_length" OR "current time - start time" if still active', () => {
 		jasmine.clock().mockDate();
 		const now = Date.now();
-		const event = new Base(RESOURCE_VIEWED, 'abc', 'dude', now);
+		const event = new Base(RESOURCE_VIEWED, 'abc', now);
 
 		expect(event.getDuration()).toBe(0);
 

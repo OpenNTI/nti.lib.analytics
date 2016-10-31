@@ -21,12 +21,11 @@ describe('Event: ExternalResourceEvent', () => {
 			startTime: now,
 			MimeType: RESOURCE_VIEWED,
 			RootContextID: course,
-			course,
 			'resource_id': resourceId,
 			'context_path': context,
 			timestamp: (now / 1000)
 		});
 
-		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"${course}","course":"${course}","resource_id":"${resourceId}","context_path":${JSON.stringify(context)},"timestamp":${now / 1000}}`);
+		expect(JSON.stringify(event)).toBe(`{"startTime":${now},"MimeType":"${RESOURCE_VIEWED}","RootContextID":"${course}","resource_id":"${resourceId}","context_path":${JSON.stringify(context)},"timestamp":${now / 1000}}`);
 	});
 });
