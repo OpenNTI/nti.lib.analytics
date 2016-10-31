@@ -1,6 +1,6 @@
 {
   "name": "nti-analytics",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "author": "nextthought",
   "license": "UNLICENSED",
   "description": "Provides a javascript analytics framework for apps.",
