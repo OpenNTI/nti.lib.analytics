@@ -42,7 +42,7 @@ export default class Base {
 	}
 
 
-	constructor (mimeType, rootContext, course, startTime) {
+	constructor (mimeType, rootContextID, courseID, startTime) {
 
 		if (!mimeType || !isKnown(mimeType)) {
 			console.warn('Unrecognized MimeType for analytics event: ' + mimeType); //eslint-disable-line no-console
@@ -66,13 +66,17 @@ export default class Base {
 			...definePublic({
 				startTime: startTime || Date.now(),
 				MimeType: mimeType || UNKNOWN_TYPE,
-				RootContextID: rootContext || course,
-				course,
+				RootContextID: rootContextID || courseID,
+				course: courseID,
 				timestamp: null,
 				'time_length': null,
 				'context_path': null
 			})
 		});
+
+		if (!this.RootContextID) {
+			throw new Error('RootContextID is required!');
+		}
 	}
 
 
