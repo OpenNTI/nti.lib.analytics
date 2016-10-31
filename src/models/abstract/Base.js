@@ -106,10 +106,11 @@ export default class Base {
 
 	getData () {
 		const output = {};
+		const has = x => x != null && (!x.toJSON || x.toJSON() != null);
 
 		for (let [key, value] of Object.entries(this)) {
 
-			if (value != null && !isFunction(value)) {
+			if (has(value) && !isFunction(value)) {
 
 				if (value && isFunction(value.getData)) {
 					value = value.getData();
