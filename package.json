@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://repos.nextthought.com/git/nti.lib.analytics"
+    "url": "https://github.com/NextThought/nti.lib.analytics.git"
   },
   "publishConfig": {
     "registry": "https://npm.nextthought.com"
