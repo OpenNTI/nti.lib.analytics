@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
+
 import {Tasks} from 'nti-commons';
 import Logger from 'nti-util-logger';
+
 import {postAnalytics, endAnalyticsSession} from './Api';
 import {isKnown, WATCH_VIDEO} from './MimeTypes';
 import {getModel} from './models';

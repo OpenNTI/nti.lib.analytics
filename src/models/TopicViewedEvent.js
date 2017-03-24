@@ -1,6 +1,7 @@
-import Base from './abstract/Base';
 import {TOPIC_VIEWED} from '../MimeTypes';
 import {definePublic} from '../utils';
+
+import Base from './abstract/Base';
 
 export default class TopicViewedEvent extends Base {
 	constructor (topicId, rootContextID, startTime) {

@@ -1,4 +1,5 @@
 import Logger from 'nti-util-logger';
+
 import Heartbeat, {PacemakersByInterval, pacemakerForInterval, Pacemaker} from '../Heartbeat';  //eslint-disable-line
 
 describe('Heartbeat Manager', () => {

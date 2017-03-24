@@ -1,7 +1,8 @@
-import {onBefore, onAfter, hookService} from './Api.spec';
 import Manager, {LOCAL_STORAGE_KEY} from '../Manager';
 import {RESOURCE_VIEWED} from '../MimeTypes';
 import {ResourceEvent} from '../models';
+
+import {onBefore, onAfter, hookService} from './Api.spec';
 
 describe('Analytics Manager Class', () => {
 	beforeEach(() => (onBefore(), jasmine.clock().install()));

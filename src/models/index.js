@@ -1,13 +1,3 @@
-import AssessmentEvent from './AssessmentEvent';
-import AssignmentEvent from './AssignmentEvent';
-import ResourceEvent from './ResourceEvent';
-import ExternalResourceEvent from './ExternalResourceEvent';
-import ProfileViewedEvent from './ProfileViewedEvent';
-import ProfileActivityViewedEvent from './ProfileActivityViewedEvent';
-import ProfileMembershipViewedEvent from './ProfileMembershipViewedEvent';
-import TopicViewedEvent from './TopicViewedEvent';
-import WatchVideoEvent from './WatchVideoEvent';
-
 import {
 	ASSIGNMENT_VIEWED,
 	PROFILE_VIEWED,
@@ -18,6 +8,16 @@ import {
 	TOPIC_VIEWED,
 	WATCH_VIDEO,
 } from '../MimeTypes';
+
+import AssessmentEvent from './AssessmentEvent';
+import AssignmentEvent from './AssignmentEvent';
+import ResourceEvent from './ResourceEvent';
+import ExternalResourceEvent from './ExternalResourceEvent';
+import ProfileViewedEvent from './ProfileViewedEvent';
+import ProfileActivityViewedEvent from './ProfileActivityViewedEvent';
+import ProfileMembershipViewedEvent from './ProfileMembershipViewedEvent';
+import TopicViewedEvent from './TopicViewedEvent';
+import WatchVideoEvent from './WatchVideoEvent';
 
 const MAPPING = {
 	[SELFASSESSMENT_VIEWED]: AssessmentEvent,

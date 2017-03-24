@@ -1,7 +1,8 @@
-import Base from './abstract/Base';
 import {SELFASSESSMENT_VIEWED} from '../MimeTypes';
-
 import {definePublic} from '../utils';
+
+import Base from './abstract/Base';
+
 
 export default class AssessmentEvent extends Base {
 	constructor (contentId, rootContextID, assessmentId, mime) {

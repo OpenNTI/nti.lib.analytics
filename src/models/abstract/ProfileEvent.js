@@ -1,5 +1,6 @@
-import Base from './Base';
 import {definePublic} from '../../utils';
+
+import Base from './Base';
 
 //We need a truthy value, but serialize to null.
 //The base class throws an exception if RootContextID is falsy. However, we need it to be for profile events.

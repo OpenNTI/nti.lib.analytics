@@ -1,5 +1,6 @@
-import AssessmentEvent from './AssessmentEvent';
 import {ASSIGNMENT_VIEWED} from '../MimeTypes';
+
+import AssessmentEvent from './AssessmentEvent';
 
 export default class AssignmentEvent extends AssessmentEvent {
 	constructor (contentId, rootContextID, assignmentId) {

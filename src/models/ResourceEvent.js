@@ -1,6 +1,7 @@
-import Base from './abstract/Base';
 import {RESOURCE_VIEWED} from '../MimeTypes';
 import {definePublic} from '../utils';
+
+import Base from './abstract/Base';
 
 export default class ResourceEvent extends Base {
 	constructor (resourceId, rootContextID) {
