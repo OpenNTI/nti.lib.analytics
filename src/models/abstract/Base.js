@@ -1,4 +1,4 @@
-import uuid from 'node-uuid';
+import uuid from 'node';
 
 import {UNKNOWN_TYPE, isKnown} from '../../MimeTypes';
 import HeartbeatManager from '../../utils/Heartbeat';
@@ -51,7 +51,7 @@ export default class Base {
 		Object.defineProperties(this, {
 
 			...defineProtected({
-				id: uuid.v4(),
+				id: uuid(),
 
 				// updates an internal timestamp to provide an approximate end time for cases where
 				// an instance didn't finish normally (as when retrieved from localStorage after the
