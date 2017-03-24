@@ -1,15 +1,25 @@
 {
 	"compact": false,
+	"sourceMaps": "both",
 	"env": {
-		"development": {
+		"test": {
 			"presets": [
-				"es2015",
+				["env", {
+					"targets": {
+						"node": "current"
+					}
+				}],
 				"stage-1"
 			]
 		},
 		"rollup": {
 			"presets": [
-				["es2015",{ "modules": false }],
+				["env", {
+					"targets": {
+						"browsers": ["> 1% in US", "last 2 versions", "safari >= 6"]
+					},
+					"modules": false
+				}],
 				"stage-1"
 			],
 			"plugins": [

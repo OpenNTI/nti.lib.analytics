@@ -69,6 +69,7 @@ describe('Analytics Manager Class', () => {
 
 	it ('enqueueEvents() appends events, and attempts to serialize queue to localStorage', () => {
 		const man = new Manager();
+		global.localStorage = global.localStorage || {setItem: () => {}};
 		spyOn(localStorage, 'setItem');
 		expect(man.queue).toEqual([]);
 		man.enqueueEvents(1,2,3);

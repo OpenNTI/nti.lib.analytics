@@ -36,9 +36,9 @@ describe('Event: WatchVideoEvent', () => {
 				"startTime":${now},
 				"MimeType":"${WATCH_VIDEO}",
 				"RootContextID":"${course}",
+				"context_path":${JSON.stringify(context)},
 				"MaxDuration":${maxDuration},
 				"resource_id":"${resourceId}",
-				"context_path":${JSON.stringify(context)},
 				"video_start_time":${now},
 				"with_transcript":${hasTranscript}
 			}
