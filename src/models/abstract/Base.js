@@ -1,8 +1,7 @@
-import uuid from 'node';
+import uuid from 'uuid';
 
 import {UNKNOWN_TYPE, isKnown} from '../../MimeTypes';
 import HeartbeatManager from '../../utils/Heartbeat';
-
 import {isFunction, definePublic, defineProtected, updateValue} from '../../utils';
 
 const seconds = (startTime = Date.now(), endTime = Date.now()) => Math.round((endTime - startTime) / 1000);
