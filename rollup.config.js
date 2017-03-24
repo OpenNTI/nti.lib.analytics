@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
@@ -8,6 +9,15 @@ export default {
 	dest: 'lib/index.js',
 	sourceMap: true,
 	exports: 'named',
+	external: [
+		'events',
+		'nti-commons',
+		'nti-lib-interfaces',
+		'nti-lib-ntiids',
+		'nti-util-logger',
+		'nti-web-client',
+		'uuid',
+	],
 	plugins: [
 		babel({ exclude: 'node_modules/**' }),
 		commonjs({
