@@ -12,7 +12,7 @@
 				"stage-1"
 			]
 		},
-		"rollup": {
+		"development": {
 			"presets": [
 				["env", {
 					"targets": {
