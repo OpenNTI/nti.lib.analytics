@@ -1,3 +1,5 @@
+import {TestUtils} from 'nti-web-client';
+
 import {ensureAnalyticsSession, endAnalyticsSession, postAnalytics} from '../Api';
 
 export const mockService = () => ({
@@ -21,23 +23,14 @@ export const mockService = () => ({
 	post: () => Promise.resolve({statusCode: 200})
 });
 
-export const hookService = (o) => Object.assign(global.$AppConfig.nodeService, o);
+export const hookService = (o) => TestUtils.hookService(o);
 
 export const onBefore = () => {
-	global.$AppConfig = {
-		...(global.$AppConfig || {}),
-		nodeService: mockService(),
-		nodeInterface: {
-			getServiceDocument: () => Promise.resolve(global.$AppConfig.nodeService)
-		}
-	};
+	TestUtils.setupTestClient(mockService();
 };
 
 export const onAfter = () => {
-	//unmock getService()
-	const {$AppConfig} = global;
-	delete $AppConfig.nodeInterface;
-	delete $AppConfig.nodeService;
+	TestUtils.tearDownTestClient();
 };
 
 describe('API', () => {
