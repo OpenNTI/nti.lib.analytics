@@ -1,7 +1,7 @@
 import {isNTIID} from 'nti-lib-ntiids';
+import {definePublic, updateValue} from 'nti-commons';
 
 import {WATCH_VIDEO} from '../MimeTypes';
-import {definePublic, updateValue} from '../utils';
 
 import Base from './abstract/Base';
 

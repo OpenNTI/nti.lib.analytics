@@ -1,5 +1,6 @@
+import {definePublic} from 'nti-commons';
+
 import {SELFASSESSMENT_VIEWED} from '../MimeTypes';
-import {definePublic} from '../utils';
 
 import Base from './abstract/Base';
 

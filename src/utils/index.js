@@ -1,7 +1,3 @@
-import {defineProtected, definePublic, defineReadOnly as readOnly, updateValue} from 'nti-commons';
-
-export {readOnly, updateValue, definePublic, defineProtected};
-
 export function filterContextPath (context, resourceId) {
 	let first = context[0];
 	let last = context[context.length - 1];

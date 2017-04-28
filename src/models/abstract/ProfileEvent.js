@@ -1,4 +1,4 @@
-import {definePublic} from '../../utils';
+import {definePublic} from 'nti-commons';
 
 import Base from './Base';
 

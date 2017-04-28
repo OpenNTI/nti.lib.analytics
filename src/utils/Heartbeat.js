@@ -1,6 +1,7 @@
 import Logger from 'nti-util-logger';
+import {defineProtected} from 'nti-commons';
 
-import {isFunction, defineProtected} from './index';
+import {isFunction} from './index';
 
 const logger = Logger.get('analytics:Heartbeat');
 
