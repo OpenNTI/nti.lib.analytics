@@ -23,7 +23,7 @@ export const mockService = () => ({
 	post: () => Promise.resolve({statusCode: 200})
 });
 
-export const hookService = (o) => TestUtils.hookService(o);
+export const hookService = (o) => TestUtils.hookService(o));
 
 export const onBefore = () => {
 	TestUtils.setupTestClient(mockService();
