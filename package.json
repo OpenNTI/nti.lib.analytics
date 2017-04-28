@@ -1,6 +1,6 @@
 {
   "name": "nti-analytics",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "nextthought",
   "license": "UNLICENSED",
   "description": "Provides a javascript analytics framework for apps.",
@@ -58,8 +58,14 @@
       "!**/*.spec.js"
     ],
     "coverageDirectory": "reports/coverage",
-    "coverageReporters": ["text", "lcov", "cobertura"],
-    "roots": ["<rootDir>/src/"],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "cobertura"
+    ],
+    "roots": [
+      "<rootDir>/src/"
+    ],
     "testResultsProcessor": "./node_modules/jest-junit"
   },
   "jest-junit": {
