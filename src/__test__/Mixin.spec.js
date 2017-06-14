@@ -14,12 +14,12 @@ function fakeInit () {
 }
 
 describe('Analytics Mixin', () => {
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => (reset(), jasmine.clock().uninstall()));
+	afterEach(() => (reset(), jest.useRealTimers()));
 
 
-	it ('resourceLoaded() base case', (done) => {
+	test ('resourceLoaded() base case', (done) => {
 		const thing = {...Mixin, resourceUnloaded: () => Promise.resolve()};
 
 		fakeInit();
@@ -39,7 +39,7 @@ describe('Analytics Mixin', () => {
 			.then(done, done.fail);
 	});
 
-	it ('resourceLoaded() arguments do not get remapped', (done) => {
+	test ('resourceLoaded() arguments do not get remapped', (done) => {
 		const thing1 = {...Mixin, resourceUnloaded: () => Promise.resolve()};
 		const thing2 = {...Mixin, resourceUnloaded: () => Promise.resolve()};
 

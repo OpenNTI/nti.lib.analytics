@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import WatchVideoEvent from '../WatchVideoEvent';
 import {WATCH_VIDEO} from '../../MimeTypes';
 
 describe('Event: WatchVideoEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Adds video fields and sets correct MimeType', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Adds video fields and sets correct MimeType', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const resourceId = 'abc';
@@ -44,7 +49,7 @@ describe('Event: WatchVideoEvent', () => {
 			}
 		`.trim().replace(/[\s\t\r\n]+/g,''));
 
-		jasmine.clock().tick(10000);
+		jest.runTimersToTime(10000);
 		event.finish();
 		expect(Object.keys(event.getData()).includes('time_length')).toBeTruthy();
 		expect(Object.keys(event.getData()).includes('timestamp')).toBeTruthy();

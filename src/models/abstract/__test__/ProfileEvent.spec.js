@@ -3,11 +3,11 @@ import {PROFILE_VIEWED} from '../../../MimeTypes';
 
 describe('Event: ProfileEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => jest.useRealTimers());
 
-	it ('Adds ProfileEntity property', () => {
+	test ('Adds ProfileEntity property', () => {
 		const now = Date.now();
 		const user = 'user123';
 		const event = new ProfileEvent(PROFILE_VIEWED, user, now);

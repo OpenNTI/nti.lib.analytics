@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import AssessmentEvent from '../AssessmentEvent';
 import {SELFASSESSMENT_VIEWED, ASSIGNMENT_VIEWED} from '../../MimeTypes';
 
 describe('Event: AssessmentEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Adds ResourceId?? and ContentId, as well sets correct MimeType', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Adds ResourceId?? and ContentId, as well sets correct MimeType', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const ResourceId = 'abc';
@@ -31,8 +36,8 @@ describe('Event: AssessmentEvent', () => {
 		expect(event.heartbeat).toBeFalsy();
 	});
 
-	it ('MimeType override', () => {
-		jasmine.clock().mockDate();
+	test ('MimeType override', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const ResourceId = 'abc';

@@ -1,3 +1,5 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import Manager, {LOCAL_STORAGE_KEY} from '../Manager';
 import {RESOURCE_VIEWED} from '../MimeTypes';
 import {ResourceEvent} from '../models';
@@ -5,15 +7,16 @@ import {ResourceEvent} from '../models';
 import {onBefore, onAfter, hookService} from './Api.spec';
 
 describe('Analytics Manager Class', () => {
-	beforeEach(() => (onBefore(), jasmine.clock().install()));
-	afterEach(() => (onAfter(), jasmine.clock().uninstall()));
+	jest.useFakeTimers();
+	beforeEach(() => (onBefore(), DateUtils.MockDate.install()));
+	afterEach(() => {
+		onAfter();
+		DateUtils.MockDate.uninstall();
+		jest.resetAllMocks();
+		jest.clearAllMocks();
+	});
 
-	it ('Constructor has no side effects on timers (does not "init")', ()=> {
-		jasmine.clock().uninstall();
-		spyOn(global, 'setInterval');
-		spyOn(global, 'setTimeout');
-		spyOn(global, 'clearInterval');
-		spyOn(global, 'clearTimeout');
+	test ('Constructor has no side effects on timers (does not "init")', ()=> {
 		spyOn(Manager.prototype, 'init');
 
 		expect(() => new Manager()).not.toThrow();
@@ -25,7 +28,7 @@ describe('Analytics Manager Class', () => {
 		expect(setInterval).not.toHaveBeenCalled();
 	});
 
-	it ('init() starts timers and processes serialized', ()=> {
+	test ('init() starts timers and processes serialized', ()=> {
 		const man = new Manager();
 		spyOn(man, 'startTimer');
 		spyOn(man, 'processSerialized');
@@ -37,7 +40,7 @@ describe('Analytics Manager Class', () => {
 		expect(man.idleMonitor).toBeTruthy();
 	});
 
-	it ('start() throws for unknown event types', ()=> {
+	test ('start() throws for unknown event types', ()=> {
 		const man = new Manager();
 		expect(() => man.start()).toThrow();
 		expect(() => man.start({})).toThrow();
@@ -49,7 +52,7 @@ describe('Analytics Manager Class', () => {
 		expect(() => man.start(false)).toThrow();
 	});
 
-	it ('start() enqueues an event', () => {
+	test ('start() enqueues an event', () => {
 		const event = new ResourceEvent('resourceId', 'course');
 		const man = new Manager();
 		spyOn(man, 'enqueueEvents');
@@ -59,7 +62,7 @@ describe('Analytics Manager Class', () => {
 		event.finish();
 	});
 
-	it ('end() marks an event finished', () => {
+	test ('end() marks an event finished', () => {
 		const fakeEvent = {finish () {}};
 		spyOn(fakeEvent, 'finish');
 		const man = new Manager();
@@ -67,17 +70,17 @@ describe('Analytics Manager Class', () => {
 		expect(fakeEvent.finish).toHaveBeenCalled();
 	});
 
-	it ('enqueueEvents() appends events, and attempts to serialize queue to localStorage', () => {
+	test ('enqueueEvents() appends events, and attempts to serialize queue to localStorage', () => {
 		const man = new Manager();
 		global.localStorage = global.localStorage || {setItem: () => {}};
-		spyOn(localStorage, 'setItem');
+		spyOn(global.localStorage, 'setItem');
 		expect(man.queue).toEqual([]);
 		man.enqueueEvents(1,2,3);
 		expect(man.queue).toEqual([1,2,3]);
-		expect(localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '[1,2,3]');
+		expect(global.localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '[1,2,3]');
 	});
 
-	it ('haltActiveEvents() halts event and filters out irrelevent items', (done) => {
+	test ('haltActiveEvents() halts event and filters out irrelevent items', (done) => {
 		const event = new ResourceEvent('a', 'b');
 		const man = new Manager();
 
@@ -93,7 +96,7 @@ describe('Analytics Manager Class', () => {
 			.catch(done.fail);
 	});
 
-	it ('haltActiveEvents() halts events (internal)', (done) => {
+	test ('haltActiveEvents() halts events (internal)', (done) => {
 		const event = new ResourceEvent('a', 'b');
 		const man = new Manager();
 
@@ -111,12 +114,12 @@ describe('Analytics Manager Class', () => {
 			.catch(done.fail);
 	});
 
-	it ('endSession() stops timer, halts events in the queue and processes those events.', (done) => {
+	test ('endSession() stops timer, halts events in the queue and processes those events.', (done) => {
 		const INTERVAL_ID = {};
 		const TIMER_ID = {};
 		const service = hookService();
-		jasmine.clock().uninstall();
-		jasmine.clock().mockDate(Date.now());
+		DateUtils.MockDate.uninstall();
+		DateUtils.MockDate.install(Date.now());
 
 		spyOn(global, 'setInterval').and.returnValue(INTERVAL_ID);
 		spyOn(global, 'setTimeout').and.returnValue(TIMER_ID);
@@ -145,7 +148,7 @@ describe('Analytics Manager Class', () => {
 			.catch(done.fail);
 	});
 
-	it ('resumeSession() emits a resume event and starts timers back up', () => {
+	test ('resumeSession() emits a resume event and starts timers back up', () => {
 		const man = new Manager();
 		spyOn(man, 'emit');
 		spyOn(man, 'startTimer');
@@ -155,7 +158,7 @@ describe('Analytics Manager Class', () => {
 		expect(man.startTimer).toHaveBeenCalledTimes(1);
 	});
 
-	it ('processSerialized() reads from localStorage, attempts to process', (done) => {
+	test ('processSerialized() reads from localStorage, attempts to process', (done) => {
 		const man = new Manager();
 		const MimeType = RESOURCE_VIEWED;
 
@@ -174,7 +177,7 @@ describe('Analytics Manager Class', () => {
 	});
 
 
-	it ('processQueue() - empty queue');
-	it ('processQueue() - non-empty queue, none finished');
-	it ('processQueue() - non-empty queue, some finished');
+	test ('processQueue() - empty queue');
+	test ('processQueue() - non-empty queue, none finished');
+	test ('processQueue() - non-empty queue, some finished');
 });

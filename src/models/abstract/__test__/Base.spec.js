@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import Base from '../Base';
 import {RESOURCE_VIEWED/*, UNKNOWN_TYPE*/} from '../../../MimeTypes';
 
 
 describe('Event: Base', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape', () => {
+	test ('Basic Shape', () => {
 		const now = Date.now();
 		const event = new Base(RESOURCE_VIEWED, 'abc', now);
 
@@ -27,7 +32,7 @@ describe('Event: Base', () => {
 	});
 
 
-	it ('halt() finishes and adds halted', () => {
+	test ('halt() finishes and adds halted', () => {
 		const event = new Base(RESOURCE_VIEWED, 'abc', Date.now());
 		event.halt();
 
@@ -38,7 +43,7 @@ describe('Event: Base', () => {
 	});
 
 
-	it ('setContextPath add/replaces "context_path"', () => {
+	test ('setContextPath add/replaces "context_path"', () => {
 		const event = new Base(RESOURCE_VIEWED, 'abc', Date.now());
 		Base.freeHeartbeat(event);//don't leave the heartbeat running, but do not "finish" the event.
 		expect(event.context_path).toBeFalsy();
@@ -49,19 +54,21 @@ describe('Event: Base', () => {
 	});
 
 
-	it ('getDuration returns "time_length" OR "current time - start time" if still active', () => {
-		jasmine.clock().mockDate();
+	test ('getDuration returns "time_length" OR "current time - start time" if still active', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const event = new Base(RESOURCE_VIEWED, 'abc', now);
 
 		expect(event.getDuration()).toBe(0);
 
-		jasmine.clock().tick(1000);
+		DateUtils.MockDate.install(now + 1000);
+		jest.runTimersToTime(1000);
 		expect(event.getDuration()).toBe(1);
 
 		event.finish(); //lock the duration by defining "time_length"
 
-		jasmine.clock().tick(1000);
+		DateUtils.MockDate.install(now + 2000);
+		jest.runTimersToTime(1000);
 		expect(event.getDuration()).not.toBe(2);
 		expect(event.getDuration()).toBe(1);
 

@@ -5,7 +5,7 @@ import {
 
 describe('utils', () => {
 
-	it ('filterContextPath', () => {
+	test ('filterContextPath', () => {
 		const id = 'c';
 		const context1 = filterContextPath([{ntiid: 'a'}, {ntiid: 'b'}, {ntiid: id}], id);
 		expect(context1).toEqual([{ntiid: 'a'}, {ntiid: 'b'}]);
@@ -27,7 +27,7 @@ describe('utils', () => {
 	});
 
 
-	it ('toAnalyticsPath', () => {
+	test ('toAnalyticsPath', () => {
 		const id = 'c';
 		const path1 = toAnalyticsPath([{ntiid: 'a'}, {something: 'else'}, {ntiid: 'b'}, {ntiid: id}], id);
 		expect(path1).toEqual(['a', 'b']);

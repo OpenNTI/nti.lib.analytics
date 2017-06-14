@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import TopicViewedEvent from '../TopicViewedEvent';
 import {TOPIC_VIEWED} from '../../MimeTypes';
 
 describe('Event: TopicViewedEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Adds topic_id and sets correct MimeType', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Adds topic_id and sets correct MimeType', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const topicId = 'abc';

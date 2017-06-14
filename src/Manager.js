@@ -1,3 +1,4 @@
+/*global localStorage*/
 import EventEmitter from 'events';
 
 import {Tasks} from 'nti-commons';

@@ -1,3 +1,4 @@
+import {Date as DateUtils} from 'nti-commons';
 import {TestUtils} from 'nti-web-client';
 
 import {ensureAnalyticsSession, endAnalyticsSession, postAnalytics} from '../Api';
@@ -30,6 +31,7 @@ export const onBefore = () => {
 };
 
 export const onAfter = () => {
+	DateUtils.MockDate.uninstall();
 	TestUtils.tearDownTestClient();
 };
 
@@ -38,10 +40,10 @@ describe('API', () => {
 	beforeEach(onBefore);
 	afterEach(onAfter);
 
-	it ('ensureAnalyticsSession success (already has cookie)', (done) => {
+	test ('ensureAnalyticsSession success (already has cookie)', (done) => {
 		const service = hookService();
-		spyOn(service, 'getWorkspace').and.callThrough();
-		spyOn(service, 'post');
+		jest.spyOn(service, 'getWorkspace');
+		jest.spyOn(service, 'post').mockImplementation(() => {});
 		ensureAnalyticsSession().then(() => {
 
 			expect(service.getWorkspace).toHaveBeenCalledWith('Analytics');
@@ -52,13 +54,13 @@ describe('API', () => {
 		}, done.fail);
 	});
 
-	it ('ensureAnalyticsSession success (no cookie)', (done) => {
+	test ('ensureAnalyticsSession success (no cookie)', (done) => {
 		const service = hookService({
 			hasCookie: () => false
 		});
 
-		spyOn(service, 'getWorkspace').and.callThrough();
-		spyOn(service, 'post').and.callThrough();
+		jest.spyOn(service, 'getWorkspace');
+		jest.spyOn(service, 'post');
 
 		ensureAnalyticsSession().then(() => {
 
@@ -70,7 +72,7 @@ describe('API', () => {
 		}, done.fail);
 	});
 
-	it ('ensureAnalyticsSession failure (no link)', (done) => {
+	test ('ensureAnalyticsSession failure (no link)', (done) => {
 		hookService({
 			getWorkspace: () => ({})
 		});
@@ -83,14 +85,14 @@ describe('API', () => {
 			});
 	});
 
-	it ('ensureAnalyticsSession failure', (done) => {
+	test ('ensureAnalyticsSession failure', (done) => {
 		const service = hookService({
 			hasCookie: () => false,
 			post: () => Promise.reject({statusCode: 500})
 		});
 
-		spyOn(service, 'getWorkspace').and.callThrough();
-		spyOn(service, 'post').and.callThrough();
+		jest.spyOn(service, 'getWorkspace');
+		jest.spyOn(service, 'post');
 
 		ensureAnalyticsSession().then(
 			() => done.fail('should have called rejection'),
@@ -103,11 +105,11 @@ describe('API', () => {
 	});
 
 
-	it ('endAnalyticsSession success', (done) => {
-		jasmine.clock().mockDate(Date.now());
+	test ('endAnalyticsSession success', (done) => {
+		DateUtils.MockDate.install();
 		const service = hookService();
 
-		spyOn(service, 'post').and.callThrough();
+		jest.spyOn(service, 'post');
 
 		endAnalyticsSession()
 			.then((resp) => {
@@ -120,7 +122,7 @@ describe('API', () => {
 			.catch(done.fail);
 	});
 
-	it ('endAnalyticsSession failure (no link)', (done) => {
+	test ('endAnalyticsSession failure (no link)', (done) => {
 		hookService({
 			getWorkspace: () => ({})
 		});
@@ -133,7 +135,7 @@ describe('API', () => {
 			});
 	});
 
-	it ('endAnalyticsSession failure (other)', (done) => {
+	test ('endAnalyticsSession failure (other)', (done) => {
 		hookService({
 			post: () => Promise.reject({statusCode: 500})
 		});
@@ -148,11 +150,11 @@ describe('API', () => {
 	});
 
 
-	it ('postAnalytics success (no cookie)', (done) => {
+	test ('postAnalytics success (no cookie)', (done) => {
 		const service = hookService({
 			hasCookie: () => false
 		});
-		spyOn(service, 'post').and.callThrough();
+		jest.spyOn(service, 'post');
 
 		postAnalytics([1,2,3])
 			.then(() => {
@@ -168,9 +170,9 @@ describe('API', () => {
 			.catch(done.fail);
 	});
 
-	it ('postAnalytics success (cookie)', (done) => {
+	test ('postAnalytics success (cookie)', (done) => {
 		const service = hookService();
-		spyOn(service, 'post').and.callThrough();
+		jest.spyOn(service, 'post');
 
 		postAnalytics([1,2,3])
 			.then(() => {
@@ -185,7 +187,7 @@ describe('API', () => {
 			.catch(done.fail);
 	});
 
-	it ('postAnalytics failure (no link)', (done) => {
+	test ('postAnalytics failure (no link)', (done) => {
 		hookService({
 			getWorkspace: () => ({})
 		});
@@ -202,7 +204,7 @@ describe('API', () => {
 			});
 	});
 
-	it ('postAnalytics failure (other)', (done) => {
+	test ('postAnalytics failure (other)', (done) => {
 		hookService({
 			post: () => Promise.reject({statusCode: 500})
 		});

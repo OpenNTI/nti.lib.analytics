@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import ProfileViewedEvent from '../ProfileViewedEvent';
 import {PROFILE_VIEWED} from '../../MimeTypes';
 
 describe('Event: ProfileViewEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Sets correct MimeType and entity', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Sets correct MimeType and entity', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const user = 'user123';
 		const event = new ProfileViewedEvent(user);

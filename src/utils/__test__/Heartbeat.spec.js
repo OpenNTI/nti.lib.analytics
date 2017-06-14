@@ -4,7 +4,7 @@ import Heartbeat, {PacemakersByInterval, pacemakerForInterval, Pacemaker} from '
 
 describe('Heartbeat Manager', () => {
 	describe('Pacemaker', () => {
-		it ('Throws error on bad arg', () => {
+		test ('Throws error on bad arg', () => {
 			expect(() => new Pacemaker()).toThrow();
 			expect(() => new Pacemaker('1')).toThrow();
 			expect(() => new Pacemaker({})).toThrow();
@@ -13,14 +13,14 @@ describe('Heartbeat Manager', () => {
 			expect(() => new Pacemaker(1000)).not.toThrow();
 		});
 
-		it ('Warns on low intervals', () => {
+		test ('Warns on low intervals', () => {
 			const logger = Logger.get('analytics:Heartbeat');
 			spyOn(logger, 'warn');
 			expect(() => new Pacemaker(1)).not.toThrow();
 			expect(logger.warn).toHaveBeenCalledWith('Creating a Pacemaker with a fast interval (%d).', 1);
 		});
 
-		it ('Does not start an interval on construction', () => {
+		test ('Does not start an interval on construction', () => {
 			spyOn(global, 'setInterval');
 			spyOn(global, 'setTimeout');
 			spyOn(global, 'clearInterval');
@@ -34,7 +34,7 @@ describe('Heartbeat Manager', () => {
 			expect(setTimeout).not.toHaveBeenCalled();
 		});
 
-		it ('adding a Heartbeat starts the Pacemaker', ()=>{
+		test ('adding a Heartbeat starts the Pacemaker', ()=>{
 			const fakeHB = {};
 			const p = new Pacemaker(1000);
 
@@ -45,7 +45,7 @@ describe('Heartbeat Manager', () => {
 			expect(p.start).toHaveBeenCalled();
 		});
 
-		it ('removing the last Heartbeat stops the Pacemaker', ()=>{
+		test ('removing the last Heartbeat stops the Pacemaker', ()=>{
 			const fakeHB = {};
 			const p = new Pacemaker(1000);
 
@@ -61,7 +61,7 @@ describe('Heartbeat Manager', () => {
 			expect(p.stop).toHaveBeenCalled();
 		});
 
-		it ('attempting to remove anything from Pacemaker stops if size is 0', ()=>{
+		test ('attempting to remove anything from Pacemaker stops if size is 0', ()=>{
 			const p = new Pacemaker(1000);
 			spyOn(p, 'stop');
 
@@ -69,7 +69,7 @@ describe('Heartbeat Manager', () => {
 			expect(p.stop).toHaveBeenCalled();
 		});
 
-		it ('starting a started Pacemaker does nothing', ()=>{
+		test ('starting a started Pacemaker does nothing', ()=>{
 			const TIMER_ID = 1;
 			spyOn(global, 'setInterval').and.returnValue(TIMER_ID);
 
@@ -85,7 +85,7 @@ describe('Heartbeat Manager', () => {
 			expect(setInterval).not.toHaveBeenCalledTimes(2);
 		});
 
-		it ('stopping frees the interval', ()=>{
+		test ('stopping frees the interval', ()=>{
 			const TIMER_ID = 1;
 			spyOn(global, 'setInterval').and.returnValue(TIMER_ID);
 			spyOn(global, 'clearInterval');
@@ -103,7 +103,7 @@ describe('Heartbeat Manager', () => {
 			expect(clearInterval).toHaveBeenCalledWith(TIMER_ID);
 		});
 
-		it ('if started, "running" is true, false if stopped', ()=>{
+		test ('if started, "running" is true, false if stopped', ()=>{
 			const TIMER_ID = 1;
 			spyOn(global, 'setInterval').and.returnValue(TIMER_ID);
 			spyOn(global, 'clearInterval');
@@ -129,7 +129,7 @@ describe('Heartbeat Manager', () => {
 	});
 
 	describe('pacemakerForInterval', () => {
-		it ('pacemakerForInterval stores instances in PacemakersByInterval', ()=> {
+		test ('pacemakerForInterval stores instances in PacemakersByInterval', ()=> {
 			const a = pacemakerForInterval(2000);
 			expect(a).toBeTruthy();
 
@@ -140,7 +140,7 @@ describe('Heartbeat Manager', () => {
 		});
 
 
-		it ('pacemakerForInterval reuses same Pacemaker', ()=> {
+		test ('pacemakerForInterval reuses same Pacemaker', ()=> {
 			const a = pacemakerForInterval(1000);
 			const b = pacemakerForInterval(1000);
 			expect(a).toBe(b);
@@ -150,14 +150,14 @@ describe('Heartbeat Manager', () => {
 
 	describe('Heartbeat', () => {
 
-		it ('Construction throws without a callback', ()=>{
+		test ('Construction throws without a callback', ()=>{
 			expect(() => new Heartbeat()).toThrow();
 			expect(() => new Heartbeat(0)).toThrow();
 			expect(() => new Heartbeat({})).toThrow();
 			expect(() => new Heartbeat('')).toThrow();
 		});
 
-		it ('Construction throws if optional interval is not a number', ()=>{
+		test ('Construction throws if optional interval is not a number', ()=>{
 			const fn = () => {};
 
 			expect(() => new Heartbeat(fn, '')).toThrow();
@@ -167,7 +167,7 @@ describe('Heartbeat Manager', () => {
 			expect(() => new Heartbeat(fn, 0)).toThrow();
 		});
 
-		it ('Construction adds instance to Pacemaker for interval', ()=>{
+		test ('Construction adds instance to Pacemaker for interval', ()=>{
 			const interval = 1100;
 			const fn = () => {};
 			const p = pacemakerForInterval(interval);
@@ -177,7 +177,7 @@ describe('Heartbeat Manager', () => {
 			expect(p.add).toHaveBeenCalledWith(h);
 		});
 
-		it ('die() removes Heartbeat from Pacemaker for interval', ()=>{
+		test ('die() removes Heartbeat from Pacemaker for interval', ()=>{
 			const interval = 1100;
 			const fn = () => {};
 			const p = pacemakerForInterval(interval);
@@ -195,7 +195,7 @@ describe('Heartbeat Manager', () => {
 			expect(p.remove).toHaveBeenCalledWith(h);
 		});
 
-		it ('onPulse() calls die() if callback() returns exactly false', ()=>{
+		test ('onPulse() calls die() if callback() returns exactly false', ()=>{
 			const interval = 1100;
 			const fn = () => false;
 			const p = pacemakerForInterval(interval);
@@ -212,7 +212,7 @@ describe('Heartbeat Manager', () => {
 			expect(h.die).toHaveBeenCalled();
 		});
 
-		it ('onPulse() calls die() if callback() throws', ()=>{
+		test ('onPulse() calls die() if callback() throws', ()=>{
 			const interval = 1100;
 			const fn = () => {throw new Error('test');};
 			const p = pacemakerForInterval(interval);

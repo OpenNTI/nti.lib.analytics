@@ -26,7 +26,7 @@
     "registry": "https://npm.nextthought.com"
   },
   "dependencies": {
-    "nti-commons": "^2.0.0",
+    "nti-commons": "^2.5.5",
     "nti-lib-interfaces": "^1.8.1",
     "nti-lib-ntiids": "^1.0.2",
     "nti-util-logger": "^1.0.4",

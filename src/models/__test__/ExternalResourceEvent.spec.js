@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import ExternalResourceEvent from '../ExternalResourceEvent';
 import {RESOURCE_VIEWED} from '../../MimeTypes';
 
 describe('Event: ExternalResourceEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Auto-Finishes event and sets context', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Auto-Finishes event and sets context', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const resourceId = 'abc';

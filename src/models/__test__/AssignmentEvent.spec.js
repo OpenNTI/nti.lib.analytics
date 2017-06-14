@@ -1,14 +1,19 @@
+import {Date as DateUtils} from 'nti-commons';
+
 import AssignmentEvent from '../AssignmentEvent';
 import {ASSIGNMENT_VIEWED} from '../../MimeTypes';
 
 describe('Event: AssignmentEvent', () => {
 
-	beforeEach(() => jasmine.clock().install());
+	beforeEach(() => jest.useFakeTimers());
 
-	afterEach(() => jasmine.clock().uninstall());
+	afterEach(() => {
+		DateUtils.MockDate.uninstall();
+		jest.useRealTimers();
+	});
 
-	it ('Basic Shape: Adds ResourceId?? and ContentId, as well sets correct MimeType', () => {
-		jasmine.clock().mockDate();
+	test ('Basic Shape: Adds ResourceId?? and ContentId, as well sets correct MimeType', () => {
+		DateUtils.MockDate.install();
 		const now = Date.now();
 		const course = 'dude';
 		const ResourceId = 'abc';
