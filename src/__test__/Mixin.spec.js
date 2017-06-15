@@ -1,3 +1,5 @@
+/* globals spyOn */
+/* eslint-env jest */
 import Mixin, {CURRENT_EVENT} from '../Mixin';
 import Manager from '../Manager';
 import {RESOURCE_VIEWED, ASSIGNMENT_VIEWED, SELFASSESSMENT_VIEWED} from '../MimeTypes';

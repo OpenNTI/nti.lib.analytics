@@ -1,3 +1,5 @@
+/* globals spyOn */
+/* eslint-env jest */
 import {Date as DateUtils} from 'nti-commons';
 import {TestUtils} from 'nti-web-client';
 
@@ -42,8 +44,8 @@ describe('API', () => {
 
 	test ('ensureAnalyticsSession success (already has cookie)', (done) => {
 		const service = hookService();
-		jest.spyOn(service, 'getWorkspace');
-		jest.spyOn(service, 'post').mockImplementation(() => {});
+		spyOn(service, 'getWorkspace').and.callThrough();
+		spyOn(service, 'post');
 		ensureAnalyticsSession().then(() => {
 
 			expect(service.getWorkspace).toHaveBeenCalledWith('Analytics');
@@ -59,8 +61,8 @@ describe('API', () => {
 			hasCookie: () => false
 		});
 
-		jest.spyOn(service, 'getWorkspace');
-		jest.spyOn(service, 'post');
+		spyOn(service, 'getWorkspace').and.callThrough();
+		spyOn(service, 'post').and.callThrough();
 
 		ensureAnalyticsSession().then(() => {
 
@@ -91,8 +93,8 @@ describe('API', () => {
 			post: () => Promise.reject({statusCode: 500})
 		});
 
-		jest.spyOn(service, 'getWorkspace');
-		jest.spyOn(service, 'post');
+		spyOn(service, 'getWorkspace').and.callThrough();
+		spyOn(service, 'post').and.callThrough();
 
 		ensureAnalyticsSession().then(
 			() => done.fail('should have called rejection'),
@@ -109,7 +111,7 @@ describe('API', () => {
 		DateUtils.MockDate.install();
 		const service = hookService();
 
-		jest.spyOn(service, 'post');
+		spyOn(service, 'post').and.callThrough();
 
 		endAnalyticsSession()
 			.then((resp) => {
@@ -154,7 +156,7 @@ describe('API', () => {
 		const service = hookService({
 			hasCookie: () => false
 		});
-		jest.spyOn(service, 'post');
+		spyOn(service, 'post').and.callThrough();
 
 		postAnalytics([1,2,3])
 			.then(() => {
@@ -172,7 +174,7 @@ describe('API', () => {
 
 	test ('postAnalytics success (cookie)', (done) => {
 		const service = hookService();
-		jest.spyOn(service, 'post');
+		spyOn(service, 'post').and.callThrough();
 
 		postAnalytics([1,2,3])
 			.then(() => {
