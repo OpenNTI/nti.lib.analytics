@@ -49,6 +49,6 @@ export function postAnalytics (events) {
 			}
 
 			return ensureAnalyticsSession()
-					.then(() => service.post(url, payload));
+				.then(() => service.post(url, payload));
 		});
 }

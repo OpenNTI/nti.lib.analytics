@@ -10,14 +10,14 @@ export function filterContextPath (context, resourceId) {
 	last = (last && (last.ntiid === resourceId || last === resourceId)) ? -1 : undefined;
 
 	//if (!last) {
-		// console.debug('The last entry in the context path is not the resource.');
+	// console.debug('The last entry in the context path is not the resource.');
 	//}
 
 	first = (typeof first === 'object' && !first.ntiid) ? 1 : 0;
 	// if (first) {
-		// This is actually OKAY... the root context node is our home view:
-		// "/mobile/" which does not have an NTIID.
-		// console.warn('Context "root" has no ntiid, omitting: %o', context);
+	// This is actually OKAY... the root context node is our home view:
+	// "/mobile/" which does not have an NTIID.
+	// console.warn('Context "root" has no ntiid, omitting: %o', context);
 	// }
 
 	if (first || last) {

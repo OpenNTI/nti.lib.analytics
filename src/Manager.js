@@ -201,7 +201,7 @@ export default class Manager extends EventEmitter {
 				this.enqueueEvents(...events),
 				this.processQueue()
 			)
-		);
+			);
 	}
 
 	/**
@@ -264,15 +264,15 @@ export default class Manager extends EventEmitter {
 	startTimer = () => {
 		clearTimeout(this.timeoutId);
 		this.timeoutId = setTimeout(() =>
-				// process the queue and start the timer again.
-				this.processQueue()
-					.catch((er)=> {
-						logger.warn('Analytics Error: %o', er);
-						//prevent errors from stopping the loop
-						//by not returning a rejected promise.
-					})
-					.then(this.startTimer),
-				this.postFrequency);
+			// process the queue and start the timer again.
+			this.processQueue()
+				.catch((er)=> {
+					logger.warn('Analytics Error: %o', er);
+					//prevent errors from stopping the loop
+					//by not returning a rejected promise.
+				})
+				.then(this.startTimer),
+		this.postFrequency);
 	}
 
 
