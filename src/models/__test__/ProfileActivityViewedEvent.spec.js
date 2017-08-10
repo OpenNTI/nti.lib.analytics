@@ -1,4 +1,3 @@
-/* globals spyOn */
 /* eslint-env jest */
 import {Date as DateUtils} from 'nti-commons';
 

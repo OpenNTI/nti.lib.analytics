@@ -1,4 +1,3 @@
-/* globals spyOn */
 /* eslint-env jest */
 import ProfileEvent from '../ProfileEvent';
 import {PROFILE_VIEWED} from '../../../MimeTypes';
