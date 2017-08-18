@@ -35,6 +35,6 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "nti-lib-scripts": "^1.0.34"
+    "nti-lib-scripts": "^1.0.36"
   }
 }
