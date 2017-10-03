@@ -14,6 +14,17 @@ describe('Event: Base', () => {
 		jest.useRealTimers();
 	});
 
+	test ('Base.finish() adds time_length and timestamp', () => {
+		let event = {};
+		Base.finish(event);
+
+		event = JSON.parse(JSON.stringify(event));
+
+		expect(event).toHaveProperty('time_length');
+		expect(event).toHaveProperty('timestamp');
+		expect(event).toHaveProperty('finished', true);
+	});
+
 	test ('Basic Shape', () => {
 		const now = Date.now();
 		const event = new Base(RESOURCE_VIEWED, 'abc', now);

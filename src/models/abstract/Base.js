@@ -21,12 +21,24 @@ export default class Base {
 			console.warn('finish invoked on an already-finished analytics event. %o', event); //eslint-disable-line no-console
 		}
 
-		// If more than heartbeatInterval has passed between lastBeat and endTime, use lastBeat.
-		// This provides a fairly accurate end time for cases where the browser/app was closed
-		// and this event is being finished after the fact. (from localStorage).
-		const end = (endTime - HeartbeatManager.interval < event.lastBeat) ? endTime : event.lastBeat;
+		const useEndTime = event.lastBeat == null
+						|| HeartbeatManager.interval == null
+						// If more than heartbeatInterval has passed between lastBeat and endTime, use lastBeat.
+						// This provides a fairly accurate end time for cases where the browser/app was closed
+						// and this event is being finished after the fact. (from localStorage).
+						|| ((endTime - (HeartbeatManager.interval || 0)) < event.lastBeat);
+		const end = useEndTime ? endTime : event.lastBeat;
 
-		//We don't control "time_length", disable the lint error...
+		// updateValue() creates non-enumerable keys if they don't exist... if the event is a deserialized
+		// JSO instead of an instance of an event model, then these properties may not previously exist.
+		if (Object.getPrototypeOf(event) === Object.prototype) {
+			Object.assign(event, {
+				'time_length': null,
+				'timestamp': null,
+				'finished': true,
+			});
+		}
+
 		updateValue(event, 'time_length', seconds(event.startTime, end));
 		updateValue(event, 'timestamp', end / 1000); // the server is expecting seconds
 
