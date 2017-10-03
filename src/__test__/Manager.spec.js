@@ -171,7 +171,10 @@ describe('Analytics Manager Class', () => {
 		man.processSerialized()
 			.then(() => {
 				expect(man.deserialize).toHaveBeenCalled();
-				expect(man.enqueueEvents).toHaveBeenCalledWith({MimeType, foo: 'bar'},{MimeType, test: true});
+				expect(man.enqueueEvents).toHaveBeenCalledWith(
+					expect.objectContaining({MimeType, foo: 'bar'}),
+					expect.objectContaining({MimeType, test: true})
+				);
 				expect(man.processQueue).toHaveBeenCalled();
 				done();
 			})
