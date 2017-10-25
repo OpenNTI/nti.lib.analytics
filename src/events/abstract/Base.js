@@ -1,16 +1,14 @@
 export default class BaseAnalyticEvent {
 	static EventType = ''
-	static Name = ''
 	static Immediate = true
 
 	static makeFactory (manager) {
 		return {
-			[this.NAME]: {
-				send: (resourceID, data) => {
-					const event = new this(this.EventType, resourceID, data, manager);
+			//Making this async so any errors don't interrupt the caller
+			send: async (resourceID, data) => {
+				const event = new this(this.EventType, resourceID, data, manager);
 
-					manager.pushEvent(event, this.Immediate);
-				}
+				manager.pushEvent(event, this.Immediate);
 			}
 		};
 	}

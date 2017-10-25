@@ -1,3 +1,5 @@
-const events = [];
+import Registry from './Registry';
 
-export default events;
+export function getEventsForManager (manager) {
+	return Registry.getEventsForManager(manager);
+}

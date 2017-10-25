@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-import AnalyticEvents from './events/';
+import {getEventsForManager} from './events/';
 
 
 const NORMAL_TIMEOUT = 10000;
@@ -10,11 +10,7 @@ export default class AnalyticsManager extends EventEmitter {
 	constructor () {
 		super();
 
-		const events = AnalyticEvents.reduce((acc, event) => {
-			return {...acc, ...event.makeFactory(this)};
-		}, {});
-
-		Object.assign(this, events);
+		Object.assign(this, getEventsForManager(this));
 	}
 
 

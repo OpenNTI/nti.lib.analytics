@@ -2,29 +2,29 @@ import Base from './Base';
 
 export default class TimedAnalyticEvent extends Base {
 	static makeFactory (manager) {
-		const {EventType, Name, Immediate} = this;
+		const Type = this;
+		const {EventType, Immediate} = this;
 
 		function findMatch (resourceID) {
 			return manager.findEvent(e => e.type === EventType && e.resourceID === resourceID);
 		}
 
 		return {
-			[Name]: {
-				start: (resourceID, data) => {
-					const event = new this(EventType, resourceID, data, manager);
+			//Making this async so any errors don't interrupt the caller
+			start: async (resourceID, data) => {
+				const event = new Type(EventType, resourceID, data, manager);
 
-					manager.pushEvent(event, Immediate);
-				},
+				manager.pushEvent(event, Immediate);
+			},
 
-				stop: (resourceID, data) => {
-					const event = findMatch(resourceID);
+			stop: async (resourceID, data) => {
+				const event = findMatch(resourceID);
 
-					if (!event) {
-						throw new Error('Cannot stop an event that hasn\'t been started.');
-					}
-
-					event.stop(data);
+				if (!event) {
+					throw new Error('Cannot stop an event that hasn\'t been started.');
 				}
+
+				event.stop(data);
 			}
 		};
 	}
