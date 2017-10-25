@@ -1,3 +1,5 @@
+export Interval from './Interval';
+
 export function filterContextPath (context, resourceId) {
 	let first = context[0];
 	let last = context[context.length - 1];

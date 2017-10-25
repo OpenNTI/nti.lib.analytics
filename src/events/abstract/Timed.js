@@ -6,7 +6,7 @@ export default class TimedAnalyticEvent extends Base {
 		const {EventType, Immediate} = this;
 
 		function findMatch (resourceID) {
-			return manager.findEvent(e => e.type === EventType && e.resourceID === resourceID);
+			return manager.findActiveEvent(e => e.type === EventType && e.resourceID === resourceID);
 		}
 
 		return {

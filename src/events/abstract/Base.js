@@ -34,7 +34,7 @@ export default class BaseAnalyticEvent {
 
 
 	updateData (data) {
-		this.data = {...this.data,...data};
+		this.data = {...this.data, ...data};
 	}
 
 
@@ -43,9 +43,10 @@ export default class BaseAnalyticEvent {
 	}
 
 
-	isFinished () {
-		return true;
+	onDataSent () {
+		this.dataSent = true;
 	}
 
 
+	isFinished () { return dataSent; }
 }

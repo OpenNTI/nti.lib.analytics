@@ -1,40 +1,74 @@
 import EventEmitter from 'events';
 
 import {getEventsForManager} from './events/';
+import {Interval} from './utils';
+import Messages from './Messages';
 
-
-const NORMAL_TIMEOUT = 10000;
-const IMMEDIATE_TIMEOUT = 100;
+const HEARTBEAT = 10000;
 
 export default class AnalyticsManager extends EventEmitter {
 	constructor () {
 		super();
 
+		this.heartbeat = new Interval(() => this.onHeartBeat, HEARTBEAT);
+		this.messages = new Messages();
+
 		Object.assign(this, getEventsForManager(this));
 	}
 
-
+	//Events that have started but not finished yet
+	//(i.e not been sent or haven't ended)
 	activeEvents = []
 
 
 	pushEvent (event, immediate) {
-		this.activeEvents.push(event);
-		this.startTimer(immediate);
-	}
-
-
-	startTimer (immediate) {
 		if (immediate) {
+			sendEvent(this.messages, event);
+		}
 
+		if (!event.isFinished()) {
+			this.activeEvents.push(event);
+			this.heartbeat.start();
 		}
 	}
 
 
-	onHearBeat () {
-		//Pass all the active events that haven't been
-		//sent or need to update to the message queue
-		//filter out any active events that are finished
+	onHeartBeat () {
+		const remaining = [];
+
+		for (let event of this.activeEvents) {
+			eventHeartBeat(event);
+
+			const finished = event.isFinished();
+
+			if (finished || event.shouldUpdate()) {
+				sendEvent(this.messages, event);
+			}
+
+			if (!finished) {
+				remaining.push(event);
+			}
+		}
+
+		this.activeEvents = remaining;
+
+		if (!this.activeEvents.length) {
+			this.heartbeat.stop();
+		}
 	}
+
+
+	suspend () {}
+	resume () {}
+}
+
+function sendEvent (messages, event) {
+	messages.add(event.getData());
+	event.onDataSent();
+}
+
+function eventHeartBeat (event) {
+	if (event.onheartBeat) { event.onHeartBeat(); }
 }
 
 
