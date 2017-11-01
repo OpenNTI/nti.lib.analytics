@@ -3,7 +3,7 @@ import {getLink} from 'nti-lib-interfaces';
 const BATCH_EVENT_TYPE = 'application/vnd.nextthought.analytics.batchevents';
 
 function getWorkspace (service) {
-	return service.getWorkspace('Analytics');
+	return service && service.getWorkspace('Analytics');
 }
 
 function getBeginSessionLink (service) {

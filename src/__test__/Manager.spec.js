@@ -6,12 +6,19 @@ import Manager from '../Manager';
 import {mockService} from './Api.spec';
 
 function mockEvent (data, finished, shouldUpdate) {
-	return {
+	const event = {
 		onDataSent: () => {},
 		getData: () => data,
 		isFinished: () => finished,
-		shouldUpdate: () => shouldUpdate
+		shouldUpdate: () => shouldUpdate,
+		suspend: () => {},
+		resume: () => {}
 	};
+
+	jest.spyOn(event, 'suspend');
+	jest.spyOn(event, 'resume');
+
+	return event;
 }
 
 function getManager (name) {
@@ -20,8 +27,23 @@ function getManager (name) {
 
 	manager.setService(service);
 
+	updateValue(manager, 'messages', {
+		send: () => {},
+		suspend: () => {},
+		resume: () => {}
+	});
+
+	updateValue(manager, 'heartbeat', {
+		start: () => {},
+		stop: () => {}
+	});
+
 	jest.spyOn(manager.messages, 'send');
+	jest.spyOn(manager.messages, 'suspend');
+	jest.spyOn(manager.messages, 'resume');
+
 	jest.spyOn(manager.heartbeat, 'start');
+	jest.spyOn(manager.heartbeat, 'stop');
 
 	return manager;
 }
@@ -143,6 +165,20 @@ describe('Analytics Manager Test', () => {
 			expect(manager.activeEvents.length).toEqual(1);
 			expect(manager.activeEvents[0]).toEqual(event);
 		});
+
+		test('when disabled push does nothing', () => {
+			const manager = getManager('disabled-push');
+			const event = mockEvent({}, false);
+
+			manager.setService(mockService(true));
+
+			manager.pushEvent(event, true);
+
+			expect(manager.messages.send).not.toHaveBeenCalled();
+			expect(manager.heartbeat.start).not.toHaveBeenCalled();
+
+			expect(manager.activeEvents.length).toEqual(0);
+		});
 	});
 
 	describe('onHeartBeat', () => {
@@ -172,6 +208,129 @@ describe('Analytics Manager Test', () => {
 			expect(manager.messages.send).toHaveBeenCalledWith(data);
 
 			expect(manager.activeEvents.length).toEqual(0);
+		});
+
+		test('updates and not finished, keeps the active and sends the messages', () => {
+			const manager = getManager('heartbeat-update-not-finished');
+			const data = {test: 'c'};
+			const event = mockEvent(data, false, true);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.onHeartBeat();
+
+			expect(manager.messages.send).toHaveBeenCalledWith(data);
+
+			expect(manager.activeEvents.length).toEqual(1);
+			expect(manager.activeEvents[0]).toEqual(event);
+		});
+
+		test('passing force, sends the active events even if they aren\'t marked for update', () => {
+			const manager = getManager('heartbeat-update-force');
+			const data = {test: 'b'};
+			const event = mockEvent(data, false, false);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.onHeartBeat(true);
+
+			expect(manager.messages.send).toHaveBeenCalledWith(data);
+
+			expect(manager.activeEvents.length).toEqual(1);
+			expect(manager.activeEvents[0]).toEqual(event);
+		});
+	});
+
+	describe('suspendEvents', () => {
+		test('sends all active events', () => {
+			const manager = getManager('suspend-with-active');
+			const data = {test: 'a'};
+			const event = mockEvent(data, false, false);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.suspendEvents();
+
+			expect(manager.messages.send).toHaveBeenCalledWith(data);
+		});
+
+		test('stops the heart beat', () => {
+			const manager = getManager('suspend-stops-heart-beat');
+
+			manager.suspendEvents();
+
+			expect(manager.heartbeat.start).not.toHaveBeenCalled();
+			expect(manager.heartbeat.stop).toHaveBeenCalled();
+		});
+
+		test('suspends messages too', () => {
+			const manager = getManager('suspends-suspends-messages');
+
+			manager.suspendEvents();
+
+			expect(manager.messages.suspend).toHaveBeenCalled();
+			expect(manager.messages.resume).not.toHaveBeenCalled();
+		});
+
+		test('calls suspend on all active events', () => {
+			const manager = getManager('suspends-suspends-events');
+			const event = mockEvent({}, false, true);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.suspendEvents();
+
+			expect(event.suspend).toHaveBeenCalled();
+			expect(event.resume).not.toHaveBeenCalled();
+		});
+
+		test('pushing non-finished event does not start heartbeat', () => {
+			const manager = getManager('suspended-push-event');
+			const event = mockEvent({}, false, true);
+
+			manager.suspendEvents();
+			manager.pushEvent(event);
+
+			expect(manager.heartbeat.start).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('resumeEvents', () => {
+		test('throws if not suspended', () => {
+			const manager = getManager('resume-throws-if-not-suspended');
+
+			expect(manager.resumeEvents).toThrow();
+		});
+
+		test('resumes messages too', () => {
+			const manager = getManager('resumes-messages-too');
+
+			manager.suspendEvents();
+			manager.resumeEvents();
+
+			expect(manager.messages.resume).toHaveBeenCalled();
+		});
+
+		test('starts the heartbeat', () => {
+			const manager = getManager('resume-starts-heartbeat');
+
+			manager.suspendEvents();
+			manager.resumeEvents();
+
+			expect(manager.heartbeat.start).toHaveBeenCalled();
+		});
+
+		test('sends active events', () => {
+			const manager = getManager('resume-sends-active-events');
+			const data = {test: 't'};
+			const event = mockEvent(data, false, true);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.suspendEvents();
+			manager.resumeEvents();
+
+			expect(manager.messages.send).toHaveBeenCalledWith(data);
 		});
 	});
 });

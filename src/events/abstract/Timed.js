@@ -99,5 +99,7 @@ export default class TimedAnalyticEvent extends Base {
 	resume () {
 		updateValue(this, 'suspended', false);
 		updateValue(this, 'startTime', new Date());
+		updateValue(this, 'updatedCount', 0);
+		updateValue(this, 'heartBeatCount', 0);
 	}
 }

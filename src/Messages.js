@@ -16,7 +16,8 @@ export default class Messages {
 				pending: [],
 				key: `${key}-pending-analytic-events`,
 				storage,
-				suspended: false
+				suspended: false,
+				service: null
 			})
 		});
 	}
@@ -35,9 +36,7 @@ export default class Messages {
 
 
 	setService (service) {
-		Object.defineProperties(this, {
-			service
-		});
+		updateValue(this, 'service', service);
 
 		this.flushMessages();
 	}
@@ -86,7 +85,7 @@ export default class Messages {
 		if (this.storage) {
 			this.storage.setItem(this.key, JSON.stringify(pending));
 		} else {
-			this.updateValue(this, 'pending', pending);
+			updateValue(this, 'pending', pending);
 		}
 	}
 

@@ -89,31 +89,35 @@ export default class AnalyticsManager extends EventEmitter {
 
 
 	suspendEvents () {
-		updateValue(this, 'suspended', true);
+		//if we already are suspended, there's nothing to do.
+		if (this.suspended) { return; }
 
 		this.onHeartBeat(true);
-		this.storage.suspend();
+
+		updateValue(this, 'suspended', true);
+		this.messages.suspend();
 		this.heartbeat.stop();
 
 		for (let event of this.activeEvents) {
-			if (event.suspend) {
-				event.suspend();
-			}
+			suspendEvent(event);
 		}
 	}
 
 
 	resumeEvents () {
+		//if we aren't suspended there's nothing to do.
+		if (!this.suspended) { throw new Error('Calling resume on analytics that are not suspended. Likely a developer error.'); }
+
 		updateValue(this, 'suspended', false);
 
-		this.storage.resume();
+		this.messages.resume();
 		this.heartbeat.start();
 
 		for (let event of this.activeEvents) {
-			if (event.resume) {
-				event.resume();
-			}
+			resumeEvent(event);
 		}
+
+		this.onHeartBeat(true);
 	}
 }
 
@@ -124,6 +128,14 @@ function sendEvent (messages, event) {
 
 function eventHeartBeat (event) {
 	if (event.onheartBeat) { event.onHeartBeat(); }
+}
+
+function suspendEvent (event) {
+	if (event.suspend) { event.suspend(); }
+}
+
+function resumeEvent (event) {
+	if (event.resume) { event.resume(); }
 }
 
 
