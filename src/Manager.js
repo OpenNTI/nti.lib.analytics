@@ -1,56 +1,86 @@
 import EventEmitter from 'events';
 
+import {defineProtected, definePublic, updateValue} from 'nti-commons';
+
+import {isAnalyticsEnabled} from './Api';
 import {getEventsForManager} from './events/';
 import {Interval} from './utils';
 import Messages from './Messages';
 
 const HEARTBEAT = 10000;
 
+const registeredNames = {};
+
 export default class AnalyticsManager extends EventEmitter {
-	constructor () {
+	constructor (name, storage, service) {
 		super();
 
-		this.heartbeat = new Interval(() => this.onHeartBeat, HEARTBEAT);
-		this.messages = new Messages();
+		if (registeredNames[name]) { throw new Error('Registering duplicate AnalyticsManager name'); }
 
-		Object.assign(this, getEventsForManager(this));
+		registeredNames[name] = true;
+
+		Object.defineProperties(this, {
+			...defineProtected({
+				heartbeat: new Interval(() => this.onHeartBeat, HEARTBEAT),
+				messages: new Messages(name, storage),
+
+				//Events that have started but not finished yet
+				//(i.e not been sent or haven't ended)
+				activeEvents: [],
+				disabled: false,
+				suspended: false
+			}),
+
+			...definePublic(
+				getEventsForManager(this)
+			)
+		});
 	}
 
-	//Events that have started but not finished yet
-	//(i.e not been sent or haven't ended)
-	activeEvents = []
+
+	setService (service) {
+		if (isAnalyticsEnabled(service)) {
+			this.messages.setService(service);
+		} else {
+			updateValue(this, 'disabled', true);
+		}
+	}
 
 
 	pushEvent (event, immediate) {
+		//if we are disabled, there's no point in doing anything
+		if (this.disabled) { return; }
+
 		if (immediate) {
 			sendEvent(this.messages, event);
 		}
 
 		if (!event.isFinished()) {
 			this.activeEvents.push(event);
-			this.heartbeat.start();
+
+			if (!this.suspended) {
+				this.heartbeat.start();
+			}
 		}
 	}
 
 
-	onHeartBeat () {
+	onHeartBeat (forceUpdate) {
 		const remaining = [];
 
 		for (let event of this.activeEvents) {
 			eventHeartBeat(event);
 
-			const finished = event.isFinished();
-
-			if (finished || event.shouldUpdate()) {
+			if (event.shouldUpdate() || forceUpdate) {
 				sendEvent(this.messages, event);
 			}
 
-			if (!finished) {
+			if (!event.isFinished()) {
 				remaining.push(event);
 			}
 		}
 
-		this.activeEvents = remaining;
+		updateValue(this, 'activeEvents', remaining);
 
 		if (!this.activeEvents.length) {
 			this.heartbeat.stop();
@@ -58,12 +88,37 @@ export default class AnalyticsManager extends EventEmitter {
 	}
 
 
-	suspend () {}
-	resume () {}
+	suspendEvents () {
+		updateValue(this, 'suspended', true);
+
+		this.onHeartBeat(true);
+		this.storage.suspend();
+		this.heartbeat.stop();
+
+		for (let event of this.activeEvents) {
+			if (event.suspend) {
+				event.suspend();
+			}
+		}
+	}
+
+
+	resumeEvents () {
+		updateValue(this, 'suspended', false);
+
+		this.storage.resume();
+		this.heartbeat.start();
+
+		for (let event of this.activeEvents) {
+			if (event.resume) {
+				event.resume();
+			}
+		}
+	}
 }
 
 function sendEvent (messages, event) {
-	messages.add(event.getData());
+	messages.send(event.getData());
 	event.onDataSent();
 }
 

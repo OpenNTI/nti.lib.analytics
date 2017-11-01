@@ -1,3 +1,5 @@
+import {defineProtected, updateValue} from 'nti-commons';
+
 export default class BaseAnalyticEvent {
 	static EventType = ''
 	static Immediate = true
@@ -6,7 +8,7 @@ export default class BaseAnalyticEvent {
 		return {
 			//Making this async so any errors don't interrupt the caller
 			send: async (resourceID, data) => {
-				const event = new this(this.EventType, resourceID, data, manager);
+				const event = new this(this.EventType, resourceID, data || {}, manager);
 
 				manager.pushEvent(event, this.Immediate);
 			}
@@ -15,31 +17,38 @@ export default class BaseAnalyticEvent {
 
 
 	constructor (type, resourceID, data, manager) {
-		const {context, RootContextID, user} = data;
+
+		Object.defineProperties({
+			...defineProtected({
+				manager,
+				type,
+				resourceID,
+				startTime: new Date(),
+				data: {...data},
+				context: data.context || manager.getContext(),
+				RootContextID: data.RootContextID || manager.getRootContextID(),
+				user: data.user || manager.getUser()
+			})
+		});
 
 		this.manager = manager;
-
-
-		this.type = type;
-		this.resourceID = resourceID;
-
-		this.startTime = new Date();
-
-		this.data = {...this.data};
-
-		this.context = context || [];//TODO: get this if its not provided
-		this.RootContextID = RootContextID || context[0] || ''; //TODO: fill this in
-		this.user = user || null;//TODO: fill this in
 	}
 
 
 	updateData (data) {
-		this.data = {...this.data, ...data};
+		updateValue(this, 'data', {...this.data, ...data});
 	}
 
 
 	getData () {
-		//TODO: fill this out
+		return {
+			MimeType: this.type,
+			'context_path': this.context,
+			RootContextId: this.RootContextID,
+			timestamp: this.startTime.getTime() / 1000, //send seconds back
+			user: this.user,
+			ResourceID: this.resourceID,
+		};
 	}
 
 
@@ -48,5 +57,5 @@ export default class BaseAnalyticEvent {
 	}
 
 
-	isFinished () { return dataSent; }
+	isFinished () { return this.dataSent; }
 }

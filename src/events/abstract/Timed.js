@@ -1,3 +1,5 @@
+import {defineProtected, updateValue} from 'nti-commons';
+
 import Base from './Base';
 
 export default class TimedAnalyticEvent extends Base {
@@ -34,14 +36,33 @@ export default class TimedAnalyticEvent extends Base {
 	constructor (type, resourceID, data, manager) {
 		super(type, resourceID, data, manager);
 
-		this.heartBeatCount = 0;
-		this.updatedCount = 0;
+		Object.defineProperties({
+			...defineProtected({
+				heartBeatCount: 0,
+				updatedCount: 0,
+				endTime: null,
+				suspended: false
+			})
+		});
+
+	}
+
+
+	getData () {
+		const data = super.getData();
+		const {startTime} = this;
+		const endTime = this.endTime || new Date();
+
+		return {
+			...data,
+			timelength: (endTime - startTime) / 1000
+		};
 	}
 
 
 	onDataSent () {
-		this.updatedCount += 1;
-		this.heartBeatCount = 0;
+		updateValue(this, 'updatedCount', this.updatedCount + 1);
+		updateValue(this, 'heartBeatCount', 0);
 	}
 
 
@@ -51,16 +72,32 @@ export default class TimedAnalyticEvent extends Base {
 
 
 	stop (data) {
+		this.updateData(data);
+
+		updateValue(this, 'endTime', new Date());
+
 		this.endTime = new Date();
 	}
 
 
 	onHeartBeat () {
+		updateValue(this, 'heartBeatCount', this.heartBeatCount + 1);
 		this.heartBeatCount += 1;
 	}
 
 
 	shouldUpdate () {
-		this.heartBeatCount >= this.updatedCount || this.endTime;
+		!this.suspended && (this.heartBeatCount >= this.updatedCount || this.endTime);
+	}
+
+
+	suspend () {
+		updateValue(this, 'suspended', true);
+	}
+
+
+	resume () {
+		updateValue(this, 'suspended', false);
+		updateValue(this, 'startTime', new Date());
 	}
 }

@@ -12,7 +12,7 @@ export class Registry {
 	}
 
 	static registerEvent (...args) {
-		this.getInstance().register(...args);
+		this.getInstance().registerEvent(...args);
 	}
 
 
