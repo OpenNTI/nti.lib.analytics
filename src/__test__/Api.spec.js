@@ -1,4 +1,3 @@
-/* globals spyOn */
 /* eslint-env jest */
 import {Date as DateUtils} from 'nti-commons';
 import {TestUtils} from 'nti-web-client';
@@ -10,8 +9,8 @@ export const END_SESSION = '/end_analytics_session';
 export const BATCH_EVENT = '/batch_events';
 
 
-export const mockService = (disabled, hasCookie, noConnection) => {
-	return {
+export const mockService = (disabled, hasCookie, noConnection, rejectPost) => {
+	const service = {
 		getWorkspace: () => {
 			return disabled ? null : {
 				Links: [
@@ -31,8 +30,12 @@ export const mockService = (disabled, hasCookie, noConnection) => {
 			};
 		},
 		hasCookie: () => hasCookie,
-		post: () => noConnection ? Promise.reject({statusCode: 0}) : Promise.resolve()
+		post: () => noConnection ? Promise.reject({statusCode: 0}) : (rejectPost ? Promise.reject({statusCode: 422}) : Promise.resolve())
 	};
+
+	jest.spyOn(service, 'post');
+
+	return service;
 };
 
 // export const hookService = (o) => TestUtils.hookService(o);

@@ -242,16 +242,14 @@ describe('Analytics Manager Test', () => {
 	});
 
 	describe('suspendEvents', () => {
-		test('sends all active events', () => {
+		test('calls onHeartBeat with force', () => {
 			const manager = getManager('suspend-with-active');
-			const data = {test: 'a'};
-			const event = mockEvent(data, false, false);
 
-			updateValue(manager, 'activeEvents', [event]);
+			jest.spyOn(manager, 'onHeartBeat');
 
 			manager.suspendEvents();
 
-			expect(manager.messages.send).toHaveBeenCalledWith(data);
+			expect(manager.onHeartBeat).toHaveBeenCalledWith(true);
 		});
 
 		test('stops the heart beat', () => {
@@ -320,206 +318,15 @@ describe('Analytics Manager Test', () => {
 			expect(manager.heartbeat.start).toHaveBeenCalled();
 		});
 
-		test('sends active events', () => {
+		test('calls onHeartBeat with force', () => {
 			const manager = getManager('resume-sends-active-events');
-			const data = {test: 't'};
-			const event = mockEvent(data, false, true);
-
-			updateValue(manager, 'activeEvents', [event]);
 
 			manager.suspendEvents();
+
+			jest.spyOn(manager, 'onHeartBeat');
 			manager.resumeEvents();
 
-			expect(manager.messages.send).toHaveBeenCalledWith(data);
+			expect(manager.onHeartBeat).toHaveBeenCalledWith(true);
 		});
 	});
 });
-
-
-
-// import {Date as DateUtils} from 'nti-commons';
-
-// import Manager, {LOCAL_STORAGE_KEY} from '../Manager';
-// import {RESOURCE_VIEWED} from '../MimeTypes';
-// import {ResourceEvent} from '../models';
-
-// import {onBefore, onAfter, hookService} from './Api.spec';
-
-// describe('Analytics Manager Class', () => {
-// 	jest.useFakeTimers();
-// 	beforeEach(() => (onBefore(), DateUtils.MockDate.install()));
-// 	afterEach(() => {
-// 		onAfter();
-// 		DateUtils.MockDate.uninstall();
-// 		jest.resetAllMocks();
-// 		jest.clearAllMocks();
-// 	});
-
-// 	test ('Constructor has no side effects on timers (does not "init")', ()=> {
-// 		spyOn(Manager.prototype, 'init');
-
-// 		expect(() => new Manager()).not.toThrow();
-
-// 		expect(Manager.prototype.init).not.toHaveBeenCalled();
-// 		expect(clearTimeout).not.toHaveBeenCalled();
-// 		expect(setTimeout).not.toHaveBeenCalled();
-// 		expect(clearInterval).not.toHaveBeenCalled();
-// 		expect(setInterval).not.toHaveBeenCalled();
-// 	});
-
-// 	test ('init() starts timers and processes serialized', ()=> {
-// 		const man = new Manager();
-// 		spyOn(man, 'startTimer');
-// 		spyOn(man, 'processSerialized');
-
-// 		man.init();
-
-// 		expect(man.startTimer).toHaveBeenCalled();
-// 		expect(man.processSerialized).toHaveBeenCalled();
-// 		expect(man.idleMonitor).toBeTruthy();
-// 	});
-
-// 	test ('start() throws for unknown event types', ()=> {
-// 		const man = new Manager();
-// 		expect(() => man.start()).toThrow();
-// 		expect(() => man.start({})).toThrow();
-// 		expect(() => man.start(0)).toThrow();
-// 		expect(() => man.start(1)).toThrow();
-// 		expect(() => man.start(new Date())).toThrow();
-// 		expect(() => man.start(true)).toThrow();
-// 		expect(() => man.start(false)).toThrow();
-// 		expect(() => man.start(false)).toThrow();
-// 	});
-
-// 	test ('start() enqueues an event', () => {
-// 		const event = new ResourceEvent('resourceId', 'course');
-// 		const man = new Manager();
-// 		spyOn(man, 'enqueueEvents');
-// 		expect(() => man.start(event)).not.toThrow();
-// 		expect(man.enqueueEvents).toHaveBeenCalledWith(event);
-
-// 		event.finish();
-// 	});
-
-// 	test ('end() marks an event finished', () => {
-// 		const fakeEvent = {finish () {}};
-// 		spyOn(fakeEvent, 'finish');
-// 		const man = new Manager();
-// 		man.end(fakeEvent);
-// 		expect(fakeEvent.finish).toHaveBeenCalled();
-// 	});
-
-// 	test ('enqueueEvents() appends events, and attempts to serialize queue to localStorage', () => {
-// 		const man = new Manager();
-// 		global.localStorage = global.localStorage || {setItem: () => {}};
-// 		spyOn(global.localStorage, 'setItem');
-// 		expect(man.queue).toEqual([]);
-// 		man.enqueueEvents(1,2,3);
-// 		expect(man.queue).toEqual([1,2,3]);
-// 		expect(global.localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '[1,2,3]');
-// 	});
-
-// 	test ('haltActiveEvents() halts event and filters out irrelevent items', (done) => {
-// 		const event = new ResourceEvent('a', 'b');
-// 		const man = new Manager();
-
-// 		man.haltActiveEvents([event, 'foo', null, void event, {}])
-// 			.then(events => {
-
-// 				expect(Array.isArray(events)).toBeTruthy();
-// 				expect(events.length).toBe(1);
-// 				expect(events[0]).toBe(event);
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('haltActiveEvents() halts events (internal)', (done) => {
-// 		const event = new ResourceEvent('a', 'b');
-// 		const man = new Manager();
-
-// 		man.start(event);
-
-// 		man.haltActiveEvents()
-// 			.then(events => {
-
-// 				expect(Array.isArray(events)).toBeTruthy();
-// 				expect(events.length).toBe(1);
-// 				expect(events[0]).toBe(event);
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('endSession() stops timer, halts events in the queue and processes those events.', (done) => {
-// 		const INTERVAL_ID = {};
-// 		const TIMER_ID = {};
-// 		const service = hookService();
-// 		DateUtils.MockDate.uninstall();
-// 		DateUtils.MockDate.install(Date.now());
-
-// 		spyOn(global, 'setInterval').and.returnValue(INTERVAL_ID);
-// 		spyOn(global, 'setTimeout').and.returnValue(TIMER_ID);
-// 		spyOn(global, 'clearInterval');
-// 		spyOn(global, 'clearTimeout');
-
-// 		spyOn(service, 'post').and.callThrough();
-
-// 		const man = new Manager();
-// 		const event = new ResourceEvent('a', 'b');
-// 		man.startTimer();//fake init
-
-// 		spyOn(man, 'processQueue');
-
-// 		man.start(event);
-
-// 		man.endSession()
-// 			.then(() => {
-// 				expect(clearInterval).toHaveBeenCalledWith(INTERVAL_ID);
-// 				expect(clearTimeout).toHaveBeenCalledWith(TIMER_ID);
-// 				expect(man.processQueue).toHaveBeenCalledTimes(1);
-// 				expect(service.post).toHaveBeenCalledWith('/end_analytics_session', {timestamp: Math.floor(Date.now() / 1000)});
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('resumeSession() emits a resume event and starts timers back up', () => {
-// 		const man = new Manager();
-// 		spyOn(man, 'emit');
-// 		spyOn(man, 'startTimer');
-
-// 		expect(() => man.resumeSession()).not.toThrow();
-// 		expect(man.emit).toHaveBeenCalledWith('resume');
-// 		expect(man.startTimer).toHaveBeenCalledTimes(1);
-// 	});
-
-// 	test ('processSerialized() reads from localStorage, attempts to process', (done) => {
-// 		const man = new Manager();
-// 		const MimeType = RESOURCE_VIEWED;
-
-// 		spyOn(man, 'deserialize').and.returnValue([{MimeType, foo: 'bar'},{MimeType, test: true}]);
-// 		spyOn(man, 'enqueueEvents');
-// 		spyOn(man, 'processQueue');
-
-// 		man.processSerialized()
-// 			.then(() => {
-// 				expect(man.deserialize).toHaveBeenCalled();
-// 				expect(man.enqueueEvents).toHaveBeenCalledWith(
-// 					expect.objectContaining({MimeType, foo: 'bar'}),
-// 					expect.objectContaining({MimeType, test: true})
-// 				);
-// 				expect(man.processQueue).toHaveBeenCalled();
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-
-// 	test ('processQueue() - empty queue');
-// 	test ('processQueue() - non-empty queue, none finished');
-// 	test ('processQueue() - non-empty queue, some finished');
-// });

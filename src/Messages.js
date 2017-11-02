@@ -12,7 +12,7 @@ export default class Messages {
 	constructor (key, storage) {
 		Object.defineProperties(this, {
 			...defineProtected({
-				messages: [],
+				stack: [],
 				pending: [],
 				key: `${key}-pending-analytic-events`,
 				storage,
@@ -43,7 +43,7 @@ export default class Messages {
 
 
 	send (message) {
-		this.messages.push(message);
+		this.stack.push(message);
 
 		if (!this.flushTimeout) {
 			this.flushTimeout = setTimeout(() => {
@@ -54,17 +54,28 @@ export default class Messages {
 	}
 
 
+	getDataForBatch () {
+		return [...this.stack, ...this.getPending()];
+	}
+
+	clear () {
+		this.setPending([]);
+		updateValue(this, 'stack', []);
+	}
+
 	async flushMessages () {
-		const data = [...this.messages, ...this.getPending()];
+		const data = this.getDataForBatch();
 
 		//if there's no data, no need to send
 		if (!data.length) { return; }
 
-		this.setPending([]);
-		updateValue(this, 'message', []);
+		//clear all pending, since we are fixing to try to send them
+		this.clear();
 
+		//if we don't have a service or are suspended mark the data as pending
 		if (!this.service || this.suspended) {
 			this.setPending(data);
+			return;
 		}
 
 		try {
@@ -93,7 +104,8 @@ export default class Messages {
 		if (!this.storage) { return this.pending; }
 
 		try {
-			const pending = JSON.parse(this.storage.getItem(this.key));
+			const stored = this.storage.getItem(this.key);
+			const pending = stored ? JSON.parse(stored) : [];
 
 			if (!Array.isArray(pending)) { throw new Error('Invalid analytic messages stored.'); }
 
