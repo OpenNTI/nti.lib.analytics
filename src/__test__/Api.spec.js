@@ -1,8 +1,10 @@
 /* eslint-env jest */
-import {Date as DateUtils} from 'nti-commons';
-import {TestUtils} from 'nti-web-client';
-
-import {ensureAnalyticsSession, endAnalyticsSession, postAnalytics} from '../Api';
+import {
+	isAnalyticsEnabled,
+	beginAnalyticsSession,
+	endAnalyticsSession,
+	sendBatchEvents
+} from '../Api';
 
 export const BEGIN_SESSION = '/analytics_session';
 export const END_SESSION = '/end_analytics_session';
@@ -30,7 +32,7 @@ export const mockService = (disabled, hasCookie, noConnection, rejectPost) => {
 			};
 		},
 		hasCookie: () => hasCookie,
-		post: () => noConnection ? Promise.reject({statusCode: 0}) : (rejectPost ? Promise.reject({statusCode: 422}) : Promise.resolve())
+		post: () => noConnection ? Promise.reject({statusCode: 0}) : (rejectPost ? Promise.reject({statusCode: 422}) : Promise.resolve({statusCode: 200}))
 	};
 
 	jest.spyOn(service, 'post');
@@ -38,197 +40,84 @@ export const mockService = (disabled, hasCookie, noConnection, rejectPost) => {
 	return service;
 };
 
-// export const hookService = (o) => TestUtils.hookService(o);
+describe('Analytic API', () => {
+	describe('isAnalyticsEnabled', () => {
+		test('is enabled if given the workspace with the batch_events link', () => {
+			const service = mockService();
 
-// export const onBefore = () => {
-// 	TestUtils.setupTestClient(mockService());
-// };
+			expect(isAnalyticsEnabled(service)).toBeTruthy();
+		});
 
-// export const onAfter = () => {
-// 	DateUtils.MockDate.uninstall();
-// 	TestUtils.tearDownTestClient();
-// };
+		test('is disabled if not given a workspace with the batch_events link', () => {
+			const service = mockService(true);
 
-// describe('API', () => {
+			expect(isAnalyticsEnabled(service)).toBeFalsy();
+		});
+	});
 
-// 	beforeEach(onBefore);
-// 	afterEach(onAfter);
+	describe('beginAnalyticSession', () => {
+		test('posts to the analytic_session link if its there, and there is no cookie', () => {
+			const service = mockService();
 
-// 	test ('ensureAnalyticsSession success (already has cookie)', (done) => {
-// 		const service = hookService();
-// 		spyOn(service, 'getWorkspace').and.callThrough();
-// 		spyOn(service, 'post');
-// 		ensureAnalyticsSession().then(() => {
+			expect(beginAnalyticsSession(service)).resolves.toEqual(expect.anything());
+			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION);
+		});
 
-// 			expect(service.getWorkspace).toHaveBeenCalledWith('Analytics');
-// 			expect(service.getWorkspace).toHaveBeenCalledTimes(1);
-// 			expect(service.post).not.toHaveBeenCalled();
-// 			done();
+		test('if there is a link, and there is a cookie it resolves without posting', () => {
+			const service = mockService(false, true);
 
-// 		}, done.fail);
-// 	});
+			expect(beginAnalyticsSession(service)).resolves.toEqual(expect.anything());
+			expect(service.post).not.toHaveBeenCalled();
+		});
 
-// 	test ('ensureAnalyticsSession success (no cookie)', (done) => {
-// 		const service = hookService({
-// 			hasCookie: () => false
-// 		});
+		test('if there is no link it rejects', () => {
+			const service = mockService(true);
 
-// 		spyOn(service, 'getWorkspace').and.callThrough();
-// 		spyOn(service, 'post').and.callThrough();
+			expect(beginAnalyticsSession(service)).rejects.toEqual('No link to begin an analytics session');
+			expect(service.post).not.toHaveBeenCalled();
+		});
+	});
 
-// 		ensureAnalyticsSession().then(() => {
+	describe('endAnalyticsSession', () => {
+		test('posts to the end_analytics_session link if its there', () => {
+			const service = mockService();
 
-// 			expect(service.getWorkspace).toHaveBeenCalledWith('Analytics');
-// 			expect(service.getWorkspace).toHaveBeenCalledTimes(1);
-// 			expect(service.post).toHaveBeenCalledWith('/analytics_session');
-// 			done();
+			expect(endAnalyticsSession(service)).resolves.toEqual(expect.anything());
+			expect(service.post).toHaveBeenCalledWith(END_SESSION);
+		});
 
-// 		}, done.fail);
-// 	});
+		test('rejects if not given an end_analytics_session link', () => {
+			const service = mockService(true);
 
-// 	test ('ensureAnalyticsSession failure (no link)', (done) => {
-// 		hookService({
-// 			getWorkspace: () => ({})
-// 		});
+			expect(endAnalyticsSession(service)).rejects.toEqual('No link to end an analytics session');
+			expect(service.post).not.toHaveBeenCalled();
+		});
+	});
 
-// 		ensureAnalyticsSession().then(
-// 			() => done.fail('should have called rejection'),
-// 			(reason) => {
-// 				expect(reason).toBe('No link for analytics_session.');
-// 				done();
-// 			});
-// 	});
+	describe('sendBatchEvents', () => {
+		test('posts to batch_events if given the link', () => {
+			const service = mockService();
+			const data = [{id: 1}, {id: 2}];
 
-// 	test ('ensureAnalyticsSession failure', (done) => {
-// 		const service = hookService({
-// 			hasCookie: () => false,
-// 			post: () => Promise.reject({statusCode: 500})
-// 		});
+			expect(sendBatchEvents(service, data)).resolves.toEqual(expect.anything());
 
-// 		spyOn(service, 'getWorkspace').and.callThrough();
-// 		spyOn(service, 'post').and.callThrough();
+			const {calls} = service.post.mock;
 
-// 		ensureAnalyticsSession().then(
-// 			() => done.fail('should have called rejection'),
-// 			() => {
-// 				expect(service.getWorkspace).toHaveBeenCalledWith('Analytics');
-// 				expect(service.getWorkspace).toHaveBeenCalledTimes(1);
-// 				expect(service.post).toHaveBeenCalledWith('/analytics_session');
-// 				done();
-// 			});
-// 	});
+			expect(calls.length).toEqual(1);
 
+			const call = calls[0];
 
-// 	test ('endAnalyticsSession success', (done) => {
-// 		DateUtils.MockDate.install();
-// 		const service = hookService();
+			expect(call[0]).toEqual(BATCH_EVENT);
+			expect(call[1].MimeType).toEqual('application/vnd.nextthought.analytics.batchevents');
+			expect(call[1].events).toEqual(data);
+		});
 
-// 		spyOn(service, 'post').and.callThrough();
+		test('rejects if not given the batch_events link', () => {
+			const service = mockService(true);
+			const data = [{id: 1}, {id: 2}];
 
-// 		endAnalyticsSession()
-// 			.then((resp) => {
-
-// 				expect(service.post).toHaveBeenCalledWith('/end_analytics_session', {timestamp: Math.floor(Date.now() / 1000)});
-// 				expect(resp.statusCode).toBeTruthy();
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('endAnalyticsSession failure (no link)', (done) => {
-// 		hookService({
-// 			getWorkspace: () => ({})
-// 		});
-
-// 		endAnalyticsSession()
-// 			.then(done.fail)
-// 			.catch(reason => {
-// 				expect(reason).toBe('No link for end_analytics_session.');
-// 				done();
-// 			});
-// 	});
-
-// 	test ('endAnalyticsSession failure (other)', (done) => {
-// 		hookService({
-// 			post: () => Promise.reject({statusCode: 500})
-// 		});
-
-// 		endAnalyticsSession()
-// 			.then(done.fail)
-// 			.catch(reason => {
-// 				expect(reason).toBeTruthy();
-// 				expect(reason.statusCode).toBeTruthy();
-// 				done();
-// 			});
-// 	});
-
-
-// 	test ('postAnalytics success (no cookie)', (done) => {
-// 		const service = hookService({
-// 			hasCookie: () => false
-// 		});
-// 		spyOn(service, 'post').and.callThrough();
-
-// 		postAnalytics([1,2,3])
-// 			.then(() => {
-// 				expect(service.post).toHaveBeenCalledTimes(2);
-// 				expect(service.post).toHaveBeenCalledWith('/analytics_session');
-// 				expect(service.post).toHaveBeenCalledWith('/batch_events', {
-// 					MimeType: 'application/vnd.nextthought.analytics.batchevents',
-// 					events: [1,2,3]
-// 				});
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('postAnalytics success (cookie)', (done) => {
-// 		const service = hookService();
-// 		spyOn(service, 'post').and.callThrough();
-
-// 		postAnalytics([1,2,3])
-// 			.then(() => {
-// 				expect(service.post).toHaveBeenCalledTimes(1);
-// 				expect(service.post).toHaveBeenCalledWith('/batch_events', {
-// 					MimeType: 'application/vnd.nextthought.analytics.batchevents',
-// 					events: [1,2,3]
-// 				});
-
-// 				done();
-// 			})
-// 			.catch(done.fail);
-// 	});
-
-// 	test ('postAnalytics failure (no link)', (done) => {
-// 		hookService({
-// 			getWorkspace: () => ({})
-// 		});
-
-// 		postAnalytics([1,2,3])
-// 			.then(done.fail)
-// 			.catch(reason => {
-
-// 				expect(reason).toEqual({
-// 					statusCode: 501,
-// 					message: 'No Analytics End-point.'
-// 				});
-// 				done();
-// 			});
-// 	});
-
-// 	test ('postAnalytics failure (other)', (done) => {
-// 		hookService({
-// 			post: () => Promise.reject({statusCode: 500})
-// 		});
-
-// 		postAnalytics([1,2,3])
-// 			.then(done.fail)
-// 			.catch(reason => {
-// 				expect(reason).toBeTruthy();
-// 				expect(reason.statusCode).toBeTruthy();
-// 				done();
-// 			});
-// 	});
-// });
+			expect(sendBatchEvents(service, data)).rejects.toEqual('No link to send batch events');
+			expect(service.post).not.toHaveBeenCalled();
+		});
+	});
+});
