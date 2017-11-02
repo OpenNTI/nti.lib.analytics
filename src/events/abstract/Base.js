@@ -4,6 +4,10 @@ export default class BaseAnalyticEvent {
 	static EventType = ''
 	static Immediate = true
 
+	static findActiveEvent (manager, resourceID) {
+		return manager.findActiveEvent(e => e.type === this.EventType && e.resourceID === resourceID);
+	}
+
 	static makeFactory (manager) {
 		return {
 			//Making this async so any errors don't interrupt the caller
@@ -16,22 +20,21 @@ export default class BaseAnalyticEvent {
 	}
 
 
-	constructor (type, resourceID, data, manager) {
+	constructor (type, resourceID, data = {}, manager = {}) {
+		const context = data.context || manager.context || [];
 
-		Object.defineProperties({
+		Object.defineProperties(this, {
 			...defineProtected({
 				manager,
 				type,
 				resourceID,
 				startTime: new Date(),
 				data: {...data},
-				context: data.context || manager.getContext(),
-				RootContextID: data.RootContextID || manager.getRootContextID(),
-				user: data.user || manager.getUser()
+				context: context,
+				RootContextID: data.RootContextID || context[0] || '',
+				user: data.user || manager.user
 			})
 		});
-
-		this.manager = manager;
 	}
 
 
@@ -47,7 +50,7 @@ export default class BaseAnalyticEvent {
 			RootContextId: this.RootContextID,
 			timestamp: this.startTime.getTime() / 1000, //send seconds back
 			user: this.user,
-			ResourceID: this.resourceID,
+			ResourceId: this.resourceID,
 		};
 	}
 

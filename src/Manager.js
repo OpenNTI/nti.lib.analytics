@@ -32,7 +32,9 @@ export default class AnalyticsManager extends EventEmitter {
 				//(i.e not been sent or haven't ended)
 				activeEvents: [],
 				disabled: false,
-				suspended: false
+				suspended: false,
+				context: null,
+				user: null
 			}),
 
 			...definePublic(
@@ -60,6 +62,27 @@ export default class AnalyticsManager extends EventEmitter {
 		} else {
 			updateValue(this, 'disabled', true);
 		}
+	}
+
+
+	setContext (context) {
+		updateValue(this, 'context', context);
+	}
+
+
+	setUser (user) {
+		updateValue(this, 'user', user);
+	}
+
+
+	findActiveEvent (predicate) {
+		for (let event of this.activeEvents) {
+			if (predicate(event)) {
+				return event;
+			}
+		}
+
+		return null;
 	}
 
 
@@ -153,6 +176,8 @@ export default class AnalyticsManager extends EventEmitter {
 
 		this.onEndSession();
 	}
+
+
 }
 
 function sendEvent (messages, event) {

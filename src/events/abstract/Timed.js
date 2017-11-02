@@ -7,10 +7,6 @@ export default class TimedAnalyticEvent extends Base {
 		const Type = this;
 		const {EventType, Immediate} = this;
 
-		function findMatch (resourceID) {
-			return manager.findActiveEvent(e => e.type === EventType && e.resourceID === resourceID);
-		}
-
 		return {
 			//Making this async so any errors don't interrupt the caller
 			start: async (resourceID, data) => {
@@ -20,7 +16,7 @@ export default class TimedAnalyticEvent extends Base {
 			},
 
 			stop: async (resourceID, data) => {
-				const event = findMatch(resourceID);
+				const event = this.findActiveEvent(manager, resourceID);
 
 				if (!event) {
 					throw new Error('Cannot stop an event that hasn\'t been started.');
@@ -75,8 +71,6 @@ export default class TimedAnalyticEvent extends Base {
 		this.updateData(data);
 
 		updateValue(this, 'endTime', new Date());
-
-		this.endTime = new Date();
 	}
 
 

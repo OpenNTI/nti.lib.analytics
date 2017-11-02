@@ -15,6 +15,7 @@ function mockEvent (data, finished, shouldUpdate) {
 		resume: () => {}
 	};
 
+	jest.spyOn(event, 'onDataSent');
 	jest.spyOn(event, 'suspend');
 	jest.spyOn(event, 'resume');
 
@@ -123,6 +124,47 @@ describe('Analytics Manager Test', () => {
 		});
 	});
 
+	test('setContext updates the context', () => {
+		const manager = new Manager('set-context');
+		const context = [{id: 1}];
+
+		manager.setContext(context);
+
+		expect(manager.context).toEqual(context);
+	});
+
+
+	test('setUser updates the user', () => {
+		const manager = new Manager('set-user');
+		const user = 'test.user';
+
+		manager.setUser(user);
+
+		expect(manager.user).toEqual(user);
+	});
+
+	describe('findActiveEvent', () => {
+		test('returns event that matches predicate', () => {
+			const manager = new Manager('find-returns-match');
+
+			updateValue(manager, 'activeEvents', [{id: 1}, {id: 2}, {id: 3}]);
+
+			const match = manager.findActiveEvent(e => e.id === 2);
+
+			expect(match.id).toEqual(2);
+		});
+
+		test('returns null if nothing matches', () => {
+			const manager = new Manager('find-returns-null');
+
+			updateValue(manager, 'activeEvents', [{id: 1}, {id: 2}, {id: 3}]);
+
+			const match = manager.findActiveEvent(() => false);
+
+			expect(match).toBeNull();
+		});
+	});
+
 	describe('pushEvent', () => {
 		test('immediate finished events, call send and do not start the heartbeat', () => {
 			const manager = getManager('immediate-finished-event');
@@ -206,6 +248,7 @@ describe('Analytics Manager Test', () => {
 			manager.onHeartBeat();
 
 			expect(manager.messages.send).toHaveBeenCalledWith(data);
+			expect(event.onDataSent).toHaveBeenCalled();
 
 			expect(manager.activeEvents.length).toEqual(0);
 		});
@@ -220,6 +263,7 @@ describe('Analytics Manager Test', () => {
 			manager.onHeartBeat();
 
 			expect(manager.messages.send).toHaveBeenCalledWith(data);
+			expect(event.onDataSent).toHaveBeenCalled();
 
 			expect(manager.activeEvents.length).toEqual(1);
 			expect(manager.activeEvents[0]).toEqual(event);
@@ -235,6 +279,7 @@ describe('Analytics Manager Test', () => {
 			manager.onHeartBeat(true);
 
 			expect(manager.messages.send).toHaveBeenCalledWith(data);
+			expect(event.onDataSent).toHaveBeenCalled();
 
 			expect(manager.activeEvents.length).toEqual(1);
 			expect(manager.activeEvents[0]).toEqual(event);
