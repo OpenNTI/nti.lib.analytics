@@ -3,7 +3,7 @@ import {updateValue} from 'nti-commons';
 
 import Manager from '../Manager';
 
-import {mockService} from './Api.spec';
+import {mockService, BEGIN_SESSION, END_SESSION} from './Api.spec';
 
 function mockEvent (data, finished, shouldUpdate) {
 	const event = {
@@ -297,7 +297,7 @@ describe('Analytics Manager Test', () => {
 		test('throws if not suspended', () => {
 			const manager = getManager('resume-throws-if-not-suspended');
 
-			expect(manager.resumeEvents).toThrow();
+			expect(() => manager.resumeEvents()).toThrow();
 		});
 
 		test('resumes messages too', () => {
@@ -327,6 +327,62 @@ describe('Analytics Manager Test', () => {
 			manager.resumeEvents();
 
 			expect(manager.onHeartBeat).toHaveBeenCalledWith(true);
+		});
+	});
+
+	describe('beginSession', () => {
+		test('Calls begin session if given the manager has a service', () => {
+			const manager = new Manager('start-session-w-service');
+			const service = mockService();
+
+			manager.setService(service);
+			manager.beginSession();
+
+			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION);
+		});
+
+		test('Does nothing if the manager is disabled', () => {
+			const manager = new Manager('start-session-w-disabled');
+			const service = mockService(true);
+
+			manager.setService(service);
+			manager.beginSession();
+
+			expect(service.post).not.toHaveBeenCalled();
+		});
+
+		test('Throws if no service has been set', () => {
+			const manager = new Manager('start-sesion-throws');
+
+			expect(() => manager.beginSession()).toThrow();
+		});
+	});
+
+	describe('endSession', () => {
+		test('Calls end session if the manager has a service', () => {
+			const manager = new Manager('end-session-w-service');
+			const service = mockService();
+
+			manager.setService(service);
+			manager.endSession();
+
+			expect(service.post).toHaveBeenCalledWith(END_SESSION);
+		});
+
+		test('Does nothing if the manager is disabled', () => {
+			const manager = new Manager('end-session-w-disabled');
+			const service = mockService(true);
+
+			manager.setService(service);
+			manager.endSession();
+
+			expect(service.post).not.toHaveBeenCalled();
+		});
+
+		test('Throws if no service has been set', () => {
+			const manager = new Manager('end-session-throws');
+
+			expect(() => manager.endSession()).toThrow();
 		});
 	});
 });
