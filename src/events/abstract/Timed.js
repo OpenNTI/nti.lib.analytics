@@ -32,7 +32,7 @@ export default class TimedAnalyticEvent extends Base {
 	constructor (type, resourceID, data, manager) {
 		super(type, resourceID, data, manager);
 
-		Object.defineProperties({
+		Object.defineProperties(this, {
 			...defineProtected({
 				heartBeatCount: 0,
 				updatedCount: 0,
@@ -57,7 +57,7 @@ export default class TimedAnalyticEvent extends Base {
 
 
 	onDataSent () {
-		updateValue(this, 'updatedCount', this.updatedCount + 1);
+		updateValue(this, 'updatedCount', Math.min((this.updatedCount + 1), 6));
 		updateValue(this, 'heartBeatCount', 0);
 	}
 
@@ -76,7 +76,6 @@ export default class TimedAnalyticEvent extends Base {
 
 	onHeartBeat () {
 		updateValue(this, 'heartBeatCount', this.heartBeatCount + 1);
-		this.heartBeatCount += 1;
 	}
 
 

@@ -9,10 +9,12 @@ export default class BaseAnalyticEvent {
 	}
 
 	static makeFactory (manager) {
+		const Type = this;
+
 		return {
 			//Making this async so any errors don't interrupt the caller
 			send: async (resourceID, data) => {
-				const event = new this(this.EventType, resourceID, data || {}, manager);
+				const event = new Type(this.EventType, resourceID, data || {}, manager);
 
 				manager.pushEvent(event, this.Immediate);
 			}
