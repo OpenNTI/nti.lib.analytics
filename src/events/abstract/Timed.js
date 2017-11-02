@@ -23,6 +23,16 @@ export default class TimedAnalyticEvent extends Base {
 				}
 
 				event.stop(data);
+			},
+
+			update: async (resourceID, data) => {
+				const event = this.findActiveEvent(manager, resourceID);
+
+				if (!event) {
+					throw new Error('Cannot update an event that hasn\'t been started.');
+				}
+
+				event.updateData(data);
 			}
 		};
 	}

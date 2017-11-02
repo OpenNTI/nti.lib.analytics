@@ -88,6 +88,30 @@ describe('Timed Analytic Event Tests', () => {
 
 			expect(event.stop).toHaveBeenCalledWith(data);
 		});
+
+		test('update throws if it does not find an active event', () => {
+			const manager = {
+				findActiveEvent: () => null
+			};
+
+			const factory = TestImmediateEvent.makeFactory(manager);
+
+			expect(factory.update('test-resource-id', {})).rejects.toEqual(expect.anything());
+		});
+
+		test('update calls updateData on the event it finds', async () => {
+			const event = {updateData: jest.fn()};
+			const data = {};
+			const manager = {
+				findActiveEvent: () => event
+			};
+
+			const factory = TestImmediateEvent.makeFactory(manager);
+
+			await factory.update('test-resource-id', data);
+
+			expect(event.updateData).toHaveBeenCalledWith(data);
+		});
 	});
 
 	//TODO: figure out a good way to test the times since they depend on dates...

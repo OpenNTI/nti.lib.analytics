@@ -10,7 +10,7 @@ export default class ThoughtView extends Timed {
 
 		return {
 			...data,
-			'topic_id': this.resourceId
+			'topic_id': this.resourceID
 		};
 	}
 }
