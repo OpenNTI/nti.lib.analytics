@@ -1,16 +1,20 @@
 import {Registry} from './Registry';
 
+import './view/AssessmentView';
+import './view/AssignmentView';
+import './view/CourseCatalogView';
+import './view/NoteView';
+import './view/ProfileAboutView';
+import './view/ProfileActivityView';
+import './view/ProfileMembershipView';
+import './view/ResourceView';
+import './view/ThoughtView';
+import './view/TopicView';
 
-export AssessmentView from './view/AssessmentView';
-export AssignmentView from './view/AssignmentView';
-export CourseCatalogView from './view/CourseCatalogView';
-export NoteView from './view/NoteView';
-export ProfileAboutView from './view/ProfileAboutView';
-export ProfileActivityView from './view/ProfileActivityView';
-export ProfileMembershipView from './view/ProfileMembershipView';
-export ResourceView from './view/ResourceView';
-export ThoughtView from './view/ThoughtView';
-export TopicView from './view/TopicView';
+import './video/VideoSkip';
+import './video/VideoWatch';
+import './video/VideoSpeedChange';
+
 
 export function getEventsForManager (manager) {
 	return Registry.getEventsForManager(manager);
