@@ -11,7 +11,7 @@ export default class TimedAnalyticEvent extends Base {
 		const {EventType, Immediate} = this;
 
 		return {
-			start (resourceID, data) {
+			start: (resourceID, data) => {
 				try {
 					const event = new Type(EventType, resourceID, data, manager);
 
@@ -21,7 +21,7 @@ export default class TimedAnalyticEvent extends Base {
 				}
 			},
 
-			stop (resourceID, data) {
+			stop: (resourceID, data) => {
 				try {
 					const event = this.findActiveEvent(manager, resourceID);
 
@@ -35,7 +35,7 @@ export default class TimedAnalyticEvent extends Base {
 				}
 			},
 
-			update (resourceID, data) {
+			update: (resourceID, data) => {
 				try {
 					const event = this.findActiveEvent(manager, resourceID);
 

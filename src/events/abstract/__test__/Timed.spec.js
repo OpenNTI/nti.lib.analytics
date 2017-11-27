@@ -1,5 +1,10 @@
 /* eslint-env jest */
+import Logger from 'nti-util-logger';
+
 import Timed from '../Timed';
+
+const logger = Logger.get('analytics:event');
+const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
 class TestImmediateEvent extends Timed {
 	static EventType = 'test-immediate-event'
@@ -19,7 +24,7 @@ describe('Timed Analytic Event Tests', () => {
 			expect(typeof factory.stop).toEqual('function');
 		});
 
-		test('Immediate event pushes, with correct resourceID, type, and data', async () => {
+		test('Immediate event pushes, with correct resourceID, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
@@ -27,7 +32,7 @@ describe('Timed Analytic Event Tests', () => {
 			const factory = TestImmediateEvent.makeFactory(manager);
 			const resourceID = 'testResourceID';
 
-			await factory.start(resourceID, {id: 'test'});
+			factory.start(resourceID, {id: 'test'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -42,7 +47,7 @@ describe('Timed Analytic Event Tests', () => {
 			expect(call[1]).toBeTruthy();
 		});
 
-		test('Non-immediate event pushes, with correct resourceID, type, and data', async () => {
+		test('Non-immediate event pushes, with correct resourceID, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
@@ -50,7 +55,7 @@ describe('Timed Analytic Event Tests', () => {
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceID = 'testResourceID';
 
-			await factory.start(resourceID, {id: 'test'});
+			factory.start(resourceID, {id: 'test'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -72,10 +77,14 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			expect(factory.stop('test-resource-id')).rejects.toEqual(expect.anything());
+			stub(logger, 'error');
+
+			factory.stop('test-resource-id');
+
+			expect(logger.error).toHaveBeenCalledWith('Could not stop event, because: %s', expect.anything());
 		});
 
-		test('Stop calls stop on the event it finds', async () => {
+		test('Stop calls stop on the event it finds', () => {
 			const event = {stop: jest.fn()};
 			const data = {};
 			const manager = {
@@ -84,7 +93,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			await factory.stop('test-resource-id', data);
+			factory.stop('test-resource-id', data);
 
 			expect(event.stop).toHaveBeenCalledWith(data);
 		});
@@ -96,10 +105,13 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			expect(factory.update('test-resource-id', {})).rejects.toEqual(expect.anything());
+			stub(logger, 'error');
+
+			factory.update('test-resource-id', {});
+			expect(logger.error).toHaveBeenCalledWith('Could not update event, because: %s', expect.anything());
 		});
 
-		test('update calls updateData on the event it finds', async () => {
+		test('update calls updateData on the event it finds', () => {
 			const event = {updateData: jest.fn()};
 			const data = {};
 			const manager = {
@@ -108,7 +120,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			await factory.update('test-resource-id', data);
+			factory.update('test-resource-id', data);
 
 			expect(event.updateData).toHaveBeenCalledWith(data);
 		});
