@@ -1,4 +1,7 @@
 import {defineProtected, updateValue} from 'nti-commons';
+import Logger from 'nti-util-logger';
+
+const logger = Logger.get('analytics:event');
 
 export default class BaseAnalyticEvent {
 	static EventType = ''
@@ -12,11 +15,15 @@ export default class BaseAnalyticEvent {
 		const Type = this;
 
 		return {
-			//Making this async so any errors don't interrupt the caller
-			send: async (resourceID, data) => {
-				const event = new Type(this.EventType, resourceID, data || {}, manager);
+			send: (resourceID, data) => {
+				try {
+					const event = new Type(this.EventType, resourceID, data || {}, manager);
 
-				manager.pushEvent(event, this.Immediate);
+					manager.pushEvent(event, this.Immediate);
+
+				} catch (e) {
+					logger.error('Could not send event because: %o', e.stack || e.message || e);
+				}
 			}
 		};
 	}

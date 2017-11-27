@@ -1,6 +1,9 @@
 import {defineProtected, updateValue} from 'nti-commons';
+import Logger from 'nti-util-logger';
 
 import Base from './Base';
+
+const logger = Logger.get('analytics:event');
 
 export default class TimedAnalyticEvent extends Base {
 	static makeFactory (manager) {
@@ -8,31 +11,42 @@ export default class TimedAnalyticEvent extends Base {
 		const {EventType, Immediate} = this;
 
 		return {
-			//Making this async so any errors don't interrupt the caller
-			start: async (resourceID, data) => {
-				const event = new Type(EventType, resourceID, data, manager);
+			start (resourceID, data) {
+				try {
+					const event = new Type(EventType, resourceID, data, manager);
 
-				manager.pushEvent(event, Immediate);
+					manager.pushEvent(event, Immediate);
+				} catch (e) {
+					logger.error('Could not start event, because: %s', e.stack || e.message || e);
+				}
 			},
 
-			stop: async (resourceID, data) => {
-				const event = this.findActiveEvent(manager, resourceID);
+			stop (resourceID, data) {
+				try {
+					const event = this.findActiveEvent(manager, resourceID);
 
-				if (!event) {
-					throw new Error('Cannot stop an event that hasn\'t been started.');
+					if (!event) {
+						throw new Error('Cannot stop an event that hasn\'t been started.');
+					}
+
+					event.stop(data);
+				} catch (e) {
+					logger.error('Could not stop event, because: %s', e.stack || e.message || e);
 				}
-
-				event.stop(data);
 			},
 
-			update: async (resourceID, data) => {
-				const event = this.findActiveEvent(manager, resourceID);
+			update (resourceID, data) {
+				try {
+					const event = this.findActiveEvent(manager, resourceID);
 
-				if (!event) {
-					throw new Error('Cannot update an event that hasn\'t been started.');
+					if (!event) {
+						throw new Error('Cannot update an event that hasn\'t been started.');
+					}
+
+					event.updateData(data);
+				} catch (e) {
+					logger.error('Could not update event, because: %s', e.stack || e.message || e);
 				}
-
-				event.updateData(data);
 			}
 		};
 	}
