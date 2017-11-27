@@ -1,5 +1,3 @@
-import {getLink} from 'nti-lib-interfaces';
-
 const BATCH_EVENT_TYPE = 'application/vnd.nextthought.analytics.batchevents';
 
 function getWorkspace (service) {
@@ -9,21 +7,20 @@ function getWorkspace (service) {
 function getBeginSessionLink (service) {
 	const workspace = getWorkspace(service);
 
-	//TODO: I think workspace may have a getLink method on it
-	return workspace && getLink(workspace, 'analytics_session');
+	return workspace && workspace.getLink('analytics_session');
 }
 
 function getEndSessionLink (service) {
 	const workspace = getWorkspace(service);
 
-	return workspace && getLink(workspace, 'end_analytics_session');
+	return workspace && workspace.getLink('end_analytics_session');
 }
 
 
 function getBatchLink (service) {
 	const workspace = getWorkspace(service);
 
-	return workspace && getLink(workspace, 'batch_events');
+	return workspace && workspace.getLink('batch_events');
 }
 
 export function isAnalyticsEnabled (service) {

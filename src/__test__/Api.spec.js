@@ -28,7 +28,10 @@ export const mockService = (disabled, hasCookie, noConnection, rejectPost) => {
 						rel: 'batch_events',
 						href: BATCH_EVENT
 					}
-				]
+				],
+				getLink (rel) {
+					return (this.Links.find(x => x.rel === rel) || {}).href;
+				}
 			};
 		},
 		hasCookie: () => hasCookie,
