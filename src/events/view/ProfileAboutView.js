@@ -10,7 +10,7 @@ export default class ProfileAboutView extends Timed {
 
 		return {
 			...data,
-			ProfileEntity: this.resourceID
+			ProfileEntity: this.resourceId
 		};
 	}
 }

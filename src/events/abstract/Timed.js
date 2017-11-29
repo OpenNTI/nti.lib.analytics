@@ -11,9 +11,9 @@ export default class TimedAnalyticEvent extends Base {
 		const {EventType, Immediate} = this;
 
 		return {
-			start: (resourceID, data) => {
+			start: (resourceId, data) => {
 				try {
-					const event = new Type(EventType, resourceID, data, manager);
+					const event = new Type(EventType, resourceId, data, manager);
 
 					manager.pushEvent(event, Immediate);
 				} catch (e) {
@@ -21,9 +21,9 @@ export default class TimedAnalyticEvent extends Base {
 				}
 			},
 
-			stop: (resourceID, data) => {
+			stop: (resourceId, data) => {
 				try {
-					const event = this.findActiveEvent(manager, resourceID);
+					const event = this.findActiveEvent(manager, resourceId);
 
 					if (!event) {
 						throw new Error('Cannot stop an event that hasn\'t been started.');
@@ -35,9 +35,9 @@ export default class TimedAnalyticEvent extends Base {
 				}
 			},
 
-			update: (resourceID, data) => {
+			update: (resourceId, data) => {
 				try {
-					const event = this.findActiveEvent(manager, resourceID);
+					const event = this.findActiveEvent(manager, resourceId);
 
 					if (!event) {
 						throw new Error('Cannot update an event that hasn\'t been started.');
@@ -53,8 +53,8 @@ export default class TimedAnalyticEvent extends Base {
 
 
 
-	constructor (type, resourceID, data, manager) {
-		super(type, resourceID, data, manager);
+	constructor (type, resourceId, data, manager) {
+		super(type, resourceId, data, manager);
 
 		Object.defineProperties(this, {
 			...defineProtected({

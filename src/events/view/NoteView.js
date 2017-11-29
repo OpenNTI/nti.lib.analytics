@@ -10,7 +10,7 @@ export default class NoteView extends Timed {
 
 		return {
 			...data,
-			'note_id': this.resourceID
+			'note_id': this.resourceId
 		};
 	}
 }

@@ -10,7 +10,7 @@ export default class TopicView extends Timed {
 
 		return {
 			...data,
-			'topic_id': this.resourceID
+			'topic_id': this.resourceId
 		};
 	}
 }

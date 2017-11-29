@@ -24,15 +24,15 @@ describe('Timed Analytic Event Tests', () => {
 			expect(typeof factory.stop).toEqual('function');
 		});
 
-		test('Immediate event pushes, with correct resourceID, type, and data', () => {
+		test('Immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
 
 			const factory = TestImmediateEvent.makeFactory(manager);
-			const resourceID = 'testResourceID';
+			const resourceId = 'testResourceId';
 
-			factory.start(resourceID, {id: 'test'});
+			factory.start(resourceId, {id: 'test'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -41,21 +41,21 @@ describe('Timed Analytic Event Tests', () => {
 			const call = calls[0];
 
 			expect(call[0]).toBeInstanceOf(TestImmediateEvent);
-			expect(call[0].resourceID).toEqual(resourceID);
+			expect(call[0].resourceId).toEqual(resourceId);
 			expect(call[0].type).toEqual('test-immediate-event');
 			expect(call[0].data.id).toEqual('test');
 			expect(call[1]).toBeTruthy();
 		});
 
-		test('Non-immediate event pushes, with correct resourceID, type, and data', () => {
+		test('Non-immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
 
 			const factory = TestNonImmediateEvent.makeFactory(manager);
-			const resourceID = 'testResourceID';
+			const resourceId = 'testResourceId';
 
-			factory.start(resourceID, {id: 'test'});
+			factory.start(resourceId, {id: 'test'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -64,7 +64,7 @@ describe('Timed Analytic Event Tests', () => {
 			const call = calls[0];
 
 			expect(call[0]).toBeInstanceOf(TestNonImmediateEvent);
-			expect(call[0].resourceID).toEqual(resourceID);
+			expect(call[0].resourceId).toEqual(resourceId);
 			expect(call[0].type).toEqual('test-non-immediate-event');
 			expect(call[0].data.id).toEqual('test');
 			expect(call[1]).toBeFalsy();
