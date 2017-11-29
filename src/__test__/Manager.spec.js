@@ -383,7 +383,7 @@ describe('Analytics Manager Test', () => {
 			manager.setService(service);
 			manager.beginSession();
 
-			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION);
+			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION, expect.anything());
 		});
 
 		test('Does nothing if the manager is disabled', () => {
@@ -411,7 +411,7 @@ describe('Analytics Manager Test', () => {
 			manager.setService(service);
 			manager.endSession();
 
-			expect(service.post).toHaveBeenCalledWith(END_SESSION);
+			expect(service.post).toHaveBeenCalledWith(END_SESSION, expect.anything());
 		});
 
 		test('Does nothing if the manager is disabled', () => {

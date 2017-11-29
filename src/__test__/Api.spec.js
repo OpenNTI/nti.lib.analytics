@@ -63,7 +63,7 @@ describe('Analytic API', () => {
 			const service = mockService();
 
 			expect(beginAnalyticsSession(service)).resolves.toEqual(expect.anything());
-			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION);
+			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION, expect.anything());
 		});
 
 		test('if there is a link, and there is a cookie it resolves without posting', () => {
@@ -86,7 +86,7 @@ describe('Analytic API', () => {
 			const service = mockService();
 
 			expect(endAnalyticsSession(service)).resolves.toEqual(expect.anything());
-			expect(service.post).toHaveBeenCalledWith(END_SESSION);
+			expect(service.post).toHaveBeenCalledWith(END_SESSION, expect.anything());
 		});
 
 		test('rejects if not given an end_analytics_session link', () => {

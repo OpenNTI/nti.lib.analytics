@@ -34,7 +34,7 @@ export function beginAnalyticsSession (service) {
 	//TODO: do we need to check that there is an active one, or should we assume that
 	//if we call begin with an active session, its because we failed to end one appropiately?
 	return link ?
-		(service.hasCookie('nti.da_session') ? Promise.resolve(true) : service.post(link)) :
+		(service.hasCookie('nti.da_session') ? Promise.resolve(true) : service.post(link, {})) :
 		Promise.reject('No link to begin an analytics session');
 }
 
@@ -43,7 +43,7 @@ export function endAnalyticsSession (service) {
 	const link = getEndSessionLink(service);
 
 	return link ?
-		service.post(link) :
+		service.post(link, {}) :
 		Promise.reject('No link to end an analytics session');
 }
 
