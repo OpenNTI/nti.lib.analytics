@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 
 import {defineProtected, definePublic, updateValue} from 'nti-commons';
+import Logger from 'nti-util-logger';
+
 
 import {
 	isAnalyticsEnabled,
@@ -11,12 +13,15 @@ import {getEventsForManager} from './events/';
 import {Interval} from './utils';
 import Messages from './Messages';
 
+
+const logger = Logger.get('analytics:Manager');
+
 const HEARTBEAT = 10000;
 
 const registeredNames = {};
 
 export default class AnalyticsManager extends EventEmitter {
-	constructor (name, storage, service) {
+	constructor (name, storage, service, heartbeatDelay = HEARTBEAT) {
 		super();
 
 		if (registeredNames[name]) { throw new Error('Registering duplicate AnalyticsManager name'); }
@@ -25,7 +30,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 		Object.defineProperties(this, {
 			...defineProtected({
-				heartbeat: new Interval(() => this.onHeartBeat, HEARTBEAT),
+				heartbeat: new Interval(() => this.onHeartBeat(), heartbeatDelay),
 				messages: new Messages(name, storage),
 
 				//Events that have started but not finished yet
@@ -90,16 +95,24 @@ export default class AnalyticsManager extends EventEmitter {
 		//if we are disabled, there's no point in doing anything
 		if (this.disabled) { return; }
 
+		logger.debug('[pushEvent] Event: %o (immediate: %s)', event, immediate);
 		if (immediate) {
+			logger.debug('[pushEvent] Sending Event: %o (because: immediate: %s)', event, immediate);
 			sendEvent(this.messages, event);
 		}
 
 		if (!event.isFinished()) {
+			logger.debug('[pushEvent] Event is not finished: %o, adding to activeEvents.', event);
 			this.activeEvents.push(event);
 
 			if (!this.suspended) {
+				logger.debug('[pushEvent] Event is not suspended, starting heartbeat: %o', event);
 				this.heartbeat.start();
+			} else {
+				logger.debug('[pushEvent] Event is suspended: %o', event);
 			}
+		} else {
+			logger.debug('[pushEvent] Event is finished: %o', event);
 		}
 	}
 
@@ -107,15 +120,21 @@ export default class AnalyticsManager extends EventEmitter {
 	onHeartBeat (forceUpdate) {
 		const remaining = [];
 
+		logger.debug('[onHeartBeat] Active Events: %o', this.activeEvents);
+
 		for (let event of this.activeEvents) {
 			eventHeartBeat(event);
 
 			if (event.shouldUpdate() || forceUpdate) {
+				logger.debug('[onHeartBeat] Sending Event: %o (because: shouldUpdate: %s, force: %s)', event, event.shouldUpdate(), forceUpdate);
 				sendEvent(this.messages, event);
 			}
 
 			if (!event.isFinished()) {
+				logger.debug('[onHeartBeat] Event is not finished. %o', event);
 				remaining.push(event);
+			} else {
+				logger.debug('[onHeartBeat] Event is finished. %o', event);
 			}
 		}
 
