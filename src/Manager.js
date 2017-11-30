@@ -54,6 +54,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 
 	setService (service) {
+		logger.debug('Applying Service document...');
 		if (isAnalyticsEnabled(service)) {
 			this.messages.setService(service);
 
@@ -65,6 +66,7 @@ export default class AnalyticsManager extends EventEmitter {
 			});
 
 		} else {
+			logger.debug('Analytics are disabled.');
 			updateValue(this, 'disabled', true);
 		}
 	}
@@ -150,6 +152,8 @@ export default class AnalyticsManager extends EventEmitter {
 		//if we already are suspended, there's nothing to do.
 		if (this.suspended) { return; }
 
+		logger.debug('Suspending Analytics Manager & events...');
+
 		this.onHeartBeat(true);
 
 		updateValue(this, 'suspended', true);
@@ -166,6 +170,7 @@ export default class AnalyticsManager extends EventEmitter {
 		//if we aren't suspended there's nothing to do.
 		if (!this.suspended) { throw new Error('Calling resume on analytics that are not suspended. Likely a developer error.'); }
 
+		logger.debug('Resuming Analytics Manager & events...');
 		updateValue(this, 'suspended', false);
 
 		this.messages.resume();
@@ -184,6 +189,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 		if (!this.onBeginSession) { throw new Error('Starting a session before the service has been set'); }
 
+		logger.debug('Beginning Analytics Session...');
 		this.onBeginSession();
 	}
 
@@ -193,6 +199,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 		if (!this.onEndSession) { throw new Error('Stopping a session before the service has been set'); }
 
+		logger.debug('Ending Analytics Session...');
 		this.onEndSession();
 	}
 
