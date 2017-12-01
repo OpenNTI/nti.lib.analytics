@@ -7,6 +7,8 @@ import {getBaseVideoData} from './VideoWatch';
 export default class VideoSkip extends Base {
 	static EventType = 'application/vnd.nextthought.analytics.skipvideoevent'
 
+	video = true
+
 	getData () {
 		const {data} = this;
 		const output = super.getData();

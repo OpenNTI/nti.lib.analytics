@@ -5,6 +5,8 @@ import {register} from '../Registry';
 export default class VideoSpeedChange extends Base {
 	static EventType = 'application/vnd.nextthought.analytics.videoplayspeedchange'
 
+	video = true
+
 	getData () {
 		const {data} = this;
 		const output = super.getData();

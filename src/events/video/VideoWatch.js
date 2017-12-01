@@ -14,6 +14,8 @@ export function getBaseVideoData (data) {
 export default class VideoWatch extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.watchvideoevent'
 
+	video = true
+
 	getData () {
 		const {data} = this;
 		const output = super.getData();
