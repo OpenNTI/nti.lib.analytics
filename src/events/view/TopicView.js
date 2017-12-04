@@ -6,7 +6,7 @@ export default class TopicView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.topicviewevent'
 
 	getData () {
-		const data = this.getData();
+		const data = super.getData();
 
 		return {
 			...data,
