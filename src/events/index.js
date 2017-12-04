@@ -8,6 +8,7 @@ import './view/ProfileAboutView';
 import './view/ProfileActivityView';
 import './view/ProfileMembershipView';
 import './view/ResourceView';
+import './view/SurveyView';
 import './view/ThoughtView';
 import './view/TopicView';
 
