@@ -35,7 +35,3 @@ export function toAnalyticsPath (context, resourceId) {
 		.map(x=> x.ntiid || (typeof x === 'string' ? x : null))
 		.filter(x=>x);
 }
-
-
-
-export const isFunction = x => typeof x === 'function';
