@@ -48,7 +48,7 @@ describe('Base Analytic Event', () => {
 			expect(typeof factory.send).toEqual('function');
 		});
 
-		test('Immediate event pushes, with correct resourceId, type, and data', async () => {
+		test('Immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
@@ -56,7 +56,7 @@ describe('Base Analytic Event', () => {
 			const factory = TestImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			await factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
+			factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -71,7 +71,7 @@ describe('Base Analytic Event', () => {
 			expect(call[1]).toBeTruthy();
 		});
 
-		test('Non-immediate event pushes, with correct resourceId, type, and data', async () => {
+		test('Non-immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
 			};
@@ -79,7 +79,7 @@ describe('Base Analytic Event', () => {
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			await factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
+			factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
