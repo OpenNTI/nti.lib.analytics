@@ -10,6 +10,10 @@ export default class TimedAnalyticEvent extends Base {
 		const Type = this;
 		const {EventType, Immediate} = this;
 
+		if (!manager) {
+			throw new TypeError('Invalid argument for manager.');
+		}
+
 		return {
 			start: (resourceId, data) => {
 				try {

@@ -14,6 +14,10 @@ export default class BaseAnalyticEvent {
 	static makeFactory (manager) {
 		const Type = this;
 
+		if (!manager) {
+			throw new TypeError('Invalid argument for manager.');
+		}
+
 		return {
 			send: (resourceId, data) => {
 				try {
