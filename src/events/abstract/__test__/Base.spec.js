@@ -48,6 +48,10 @@ describe('Base Analytic Event', () => {
 			expect(typeof factory.send).toEqual('function');
 		});
 
+		test('makeFactory throws if no manager', () => {
+			expect(() => Base.makeFactory()).toThrow();
+		});
+
 		test('Immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
 				pushEvent: jest.fn()
@@ -57,6 +61,12 @@ describe('Base Analytic Event', () => {
 			const factory = TestImmediateEvent.makeFactory(manager);
 
 			factory.send();
+			expect(manager.pushEvent).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledWith('Could not send event because: %o', expect.anything());
+
+			manager.pushEvent.mockClear();
+
+			factory.send('id', {rootContextId: 'foo'});
 			expect(manager.pushEvent).not.toHaveBeenCalled();
 			expect(logger.error).toHaveBeenCalledWith('Could not send event because: %o', expect.anything());
 

@@ -220,5 +220,6 @@ function suspendEvent (event) {
 }
 
 function resumeEvent (event) {
+	/* istanbul ignore else */
 	if (event.resume) { event.resume(); }
 }

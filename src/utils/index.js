@@ -35,3 +35,9 @@ export function toAnalyticsPath (context, resourceId) {
 		.map(x=> x.ntiid || (typeof x === 'string' ? x : null))
 		.filter(x=>x);
 }
+
+
+export function getError (e) {
+	/* istanbul ignore next */
+	return e.stack || e.message || e;
+}

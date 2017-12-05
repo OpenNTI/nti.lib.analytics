@@ -17,6 +17,10 @@ class TestNonImmediateEvent extends Timed {
 
 describe('Timed Analytic Event Tests', () => {
 	describe('makeFactory', () => {
+		test('makeFactory throws if no manager', () => {
+			expect(() => Timed.makeFactory()).toThrow();
+		});
+
 		test('factory defines start and stop', () => {
 			const factory = Timed.makeFactory({});
 

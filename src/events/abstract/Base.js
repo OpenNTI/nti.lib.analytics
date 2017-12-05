@@ -1,5 +1,7 @@
-import {defineProtected, updateValue} from 'nti-commons';
+import { defineProtected, updateValue } from 'nti-commons';
 import Logger from 'nti-util-logger';
+
+import { getError } from '../../utils';
 
 const logger = Logger.get('analytics:event');
 
@@ -26,7 +28,7 @@ export default class BaseAnalyticEvent {
 					manager.pushEvent(event, this.Immediate);
 
 				} catch (e) {
-					logger.error('Could not send event because: %o', e.stack || e.message || e);
+					logger.error('Could not send event because: %o', getError(e));
 				}
 			}
 		};
