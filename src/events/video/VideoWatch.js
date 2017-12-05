@@ -3,7 +3,7 @@ import {register} from '../Registry';
 
 export function getBaseVideoData (data) {
 	return {
-		'with_transcript': data.withTranscript,
+		'with_transcript': data.withTranscript || false,
 		'video_start_time': data.videoStartTime,
 		'video_end_time': data.videoEndTime,
 		'time_length': Math.abs(data.videoEndTime - data.videoStartTime) || null,
