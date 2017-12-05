@@ -137,8 +137,8 @@ describe('Base Analytic Event', () => {
 			expect(testEvent.user).toEqual(data.user);
 		});
 
-		test('sets RootContextID from data', () => {
-			expect(testEvent.RootContextID).toEqual(data.RootContextID);
+		test('sets rootContextId from data', () => {
+			expect(testEvent.rootContextId).toEqual(data.rootContextId);
 		});
 
 		test('gets context from manager if not in data', () => {
@@ -153,11 +153,11 @@ describe('Base Analytic Event', () => {
 			expect(localEvent.context).toEqual([]);
 		});
 
-		test('sets RootContextId from context if not given one', () => {
+		test('sets rootContextId from context if not given one', () => {
 			const context = ['root'];
 			const localEvent = new Base(type, resourceId, {context}, {});
 
-			expect(localEvent.RootContextID).toEqual('root');
+			expect(localEvent.rootContextId).toEqual('root');
 		});
 
 		test('sets RootContextId to empty string if none given', () => {
@@ -177,7 +177,7 @@ describe('Base Analytic Event', () => {
 
 			expect(output.MimeType).toEqual(type);
 			expect(output['context_path']).toEqual(data.context);
-			expect(output.RootContextID).toEqual(data.RootContextID);
+			expect(output.RootContextID).toEqual(data.rootContextId);
 			expect(output.timestamp).toEqual(DATE_TO_USE.getTime() / 1000);
 			expect(output.user).toEqual(data.user);
 			expect(output.ResourceId).toEqual(resourceId);

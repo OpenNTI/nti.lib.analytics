@@ -32,16 +32,18 @@ export default class BaseAnalyticEvent {
 	constructor (type, resourceId, data = {}, manager = {}) {
 		const context = data.context || manager.context || [];
 
+		const rootContextId = data.RootContextID || data.rootContextId || context[0] || '';
+		const user = data.user || manager.user;
 		Object.defineProperties(this, {
 			...defineProtected({
-				manager,
-				type,
-				resourceId,
-				startTime: new Date(),
+				context,
 				data: {...data},
-				context: context,
-				RootContextID: data.RootContextID || data.rootContextId || context[0] || '',
-				user: data.user || manager.user
+				manager,
+				resourceId,
+				rootContextId,
+				startTime: new Date(),
+				type,
+				user,
 			})
 		});
 	}
@@ -56,7 +58,7 @@ export default class BaseAnalyticEvent {
 		return {
 			MimeType: this.type,
 			'context_path': this.context,
-			RootContextID: this.RootContextID,
+			RootContextID: this.rootContextId,
 			timestamp: this.startTime.getTime() / 1000, //send seconds back
 			user: this.user,
 			ResourceId: this.resourceId,
