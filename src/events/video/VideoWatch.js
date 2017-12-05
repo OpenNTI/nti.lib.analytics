@@ -24,7 +24,7 @@ export default class VideoWatch extends Timed {
 			...output,
 			...getBaseVideoData(data),
 			'MaxDuration': data.duration,
-			'PlaySpeed': data.playSpeed
+			'PlaySpeed': data.playSpeed || 1
 		};
 	}
 
