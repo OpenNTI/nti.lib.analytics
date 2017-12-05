@@ -44,7 +44,7 @@ describe('Base Analytic Event', () => {
 			const factory = TestImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			await factory.send(resourceId, {id: 'test'});
+			await factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -67,7 +67,7 @@ describe('Base Analytic Event', () => {
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			await factory.send(resourceId, {id: 'test'});
+			await factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -86,7 +86,7 @@ describe('Base Analytic Event', () => {
 	describe('data', () => {
 		const type = 'test-type';
 		const resourceId = 'test-resource-id';
-		const data = {id: 1, context: ['context'], user: 'user', RootContextID: 'root'};
+		const data = {id: 1, context: ['context'], user: 'user', rootContextId: 'root'};
 		const manager = {context: ['manager-context'], user: 'manager-user'};
 		const DATE_TO_USE = new Date('2016');
 
@@ -142,28 +142,26 @@ describe('Base Analytic Event', () => {
 		});
 
 		test('gets context from manager if not in data', () => {
-			const localEvent = new Base(type, resourceId, {}, manager);
+			const localEvent = new Base(type, resourceId, {rootContextId: '1:2:3', user: 'foobar'}, manager);
 
 			expect(localEvent.context).toEqual(manager.context);
 		});
 
 		test('context is empty array if none given', () => {
-			const localEvent = new Base(type, resourceId, {}, {});
+			const localEvent = new Base(type, resourceId, {rootContextId: '1:2:3', user: 'foobar'}, {});
 
 			expect(localEvent.context).toEqual([]);
 		});
 
 		test('sets rootContextId from context if not given one', () => {
 			const context = ['root'];
-			const localEvent = new Base(type, resourceId, {context}, {});
+			const localEvent = new Base(type, resourceId, {context, user: 'foobar'}, {});
 
 			expect(localEvent.rootContextId).toEqual('root');
 		});
 
-		test('sets RootContextId to empty string if none given', () => {
-			const localEvent = new Base(type, resourceId, {}, {});
-
-			expect(localEvent.RootContextID).toEqual('');
+		test('Throws if rootContextId is not given', () => {
+			expect(() => new Base(type, resourceId, {}, {})).toThrow();
 		});
 
 		test('sets user from the manager if not in data', () => {
@@ -185,13 +183,13 @@ describe('Base Analytic Event', () => {
 	});
 
 	test('isFinished returns false if onDataSent has not been called', () => {
-		const testEvent = new Base();
+		const testEvent = new Base('dummy', 'id', {rootContextId: '1:2:3', user: 'foobar'});
 
 		expect(testEvent.isFinished()).toBeFalsy();
 	});
 
 	test('isFinished returns true if onDataSent has been called', () => {
-		const testEvent = new Base();
+		const testEvent = new Base('dummy', 'id', {rootContextId: '1:2:3', user: 'foobar'});
 
 		testEvent.onDataSent();
 		expect(testEvent.isFinished()).toBeTruthy();

@@ -32,7 +32,7 @@ describe('Timed Analytic Event Tests', () => {
 			const factory = TestImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			factory.start(resourceId, {id: 'test'});
+			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -55,7 +55,7 @@ describe('Timed Analytic Event Tests', () => {
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			factory.start(resourceId, {id: 'test'});
+			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 

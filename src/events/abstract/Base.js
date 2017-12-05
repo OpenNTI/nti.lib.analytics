@@ -34,6 +34,15 @@ export default class BaseAnalyticEvent {
 
 		const rootContextId = data.RootContextID || data.rootContextId || context[0] || '';
 		const user = data.user || manager.user;
+
+		if (!rootContextId) {
+			throw new TypeError('No rootContextId defined!');
+		}
+
+		if (!user) {
+			throw new TypeError('No user defined!');
+		}
+
 		Object.defineProperties(this, {
 			...defineProtected({
 				context,
