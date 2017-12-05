@@ -10,7 +10,7 @@ export default class CourseCatalogView extends Timed {
 
 		return {
 			...data,
-			RootContextID: this.resouceID
+			RootContextID: this.resourceId
 		};
 	}
 }
