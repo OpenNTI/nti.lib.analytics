@@ -30,6 +30,11 @@ describe('Timed Analytic Event Tests', () => {
 			};
 
 			const factory = TestImmediateEvent.makeFactory(manager);
+			stub(logger, 'error');
+			factory.start();
+			expect(manager.pushEvent).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledWith('Could not start event, because: %s', expect.anything());
+
 			const resourceId = 'testResourceId';
 
 			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});

@@ -53,8 +53,14 @@ describe('Base Analytic Event', () => {
 				pushEvent: jest.fn()
 			};
 
-			const factory = TestImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
+			const factory = TestImmediateEvent.makeFactory(manager);
+
+			factory.send();
+			expect(manager.pushEvent).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledWith('Could not send event because: %o', expect.anything());
+
+			manager.pushEvent.mockClear();
 
 			factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
