@@ -36,7 +36,7 @@ export default class BaseAnalyticEvent {
 	constructor (type, resourceId, data = {}, manager = {}) {
 		const context = data.context || manager.context || [];
 
-		const rootContextId = data.RootContextID || data.rootContextId || context[0] || '';
+		const rootContextId = data.rootContextId || data.RootContextID || context[0] || '';
 		const user = data.user || manager.user;
 
 		if (!rootContextId) {
