@@ -35,7 +35,8 @@ describe('SurveyView Event', () => {
 
 		expect(event.getData()).toEqual({
 			'ContentId': 'content-id',
-			'MimeType': 'application/vnd.nextthought.analytics.surveyviewevent',
+			// 'MimeType': 'application/vnd.nextthought.analytics.surveyviewevent',
+			'MimeType': 'application/vnd.nextthought.analytics.selfassessmentviewevent',
 			'ResourceId': 'id',
 			'RootContextID': '1:2:3',
 			'context_path': ['1:2:3'],
