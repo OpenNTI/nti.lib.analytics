@@ -17,6 +17,10 @@ class TestNonImmediateEvent extends Timed {
 
 describe('Timed Analytic Event Tests', () => {
 	describe('makeFactory', () => {
+		test('makeFactory throws if no manager', () => {
+			expect(() => Timed.makeFactory()).toThrow();
+		});
+
 		test('factory defines start and stop', () => {
 			const factory = Timed.makeFactory({});
 
@@ -30,9 +34,14 @@ describe('Timed Analytic Event Tests', () => {
 			};
 
 			const factory = TestImmediateEvent.makeFactory(manager);
+			stub(logger, 'error');
+			factory.start();
+			expect(manager.pushEvent).not.toHaveBeenCalled();
+			expect(logger.error).toHaveBeenCalledWith('Could not start event, because: %s', expect.anything());
+
 			const resourceId = 'testResourceId';
 
-			factory.start(resourceId, {id: 'test'});
+			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 
@@ -55,7 +64,7 @@ describe('Timed Analytic Event Tests', () => {
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			factory.start(resourceId, {id: 'test'});
+			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
 			const {calls} = manager.pushEvent.mock;
 

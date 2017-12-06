@@ -37,5 +37,7 @@ export function toAnalyticsPath (context, resourceId) {
 }
 
 
-
-export const isFunction = x => typeof x === 'function';
+export function getError (e) {
+	/* istanbul ignore next */
+	return e.stack || e.message || e;
+}

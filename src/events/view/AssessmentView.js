@@ -10,7 +10,9 @@ export default class AssessmentView extends Timed {
 
 		return {
 			...data,
-			ContentId: this.data.ContentID
+			ContentId: this.data.contentId ||
+				/* istanbul ignore next */
+				this.data.ContentID
 		};
 	}
 }

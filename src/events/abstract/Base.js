@@ -1,5 +1,7 @@
-import {defineProtected, updateValue} from 'nti-commons';
+import { defineProtected, updateValue } from 'nti-commons';
 import Logger from 'nti-util-logger';
+
+import { getError } from '../../utils';
 
 const logger = Logger.get('analytics:event');
 
@@ -14,6 +16,10 @@ export default class BaseAnalyticEvent {
 	static makeFactory (manager) {
 		const Type = this;
 
+		if (!manager) {
+			throw new TypeError('Invalid argument for manager.');
+		}
+
 		return {
 			send: (resourceId, data) => {
 				try {
@@ -22,7 +28,7 @@ export default class BaseAnalyticEvent {
 					manager.pushEvent(event, this.Immediate);
 
 				} catch (e) {
-					logger.error('Could not send event because: %o', e.stack || e.message || e);
+					logger.error('Could not send event because: %o', getError(e));
 				}
 			}
 		};
@@ -32,16 +38,27 @@ export default class BaseAnalyticEvent {
 	constructor (type, resourceId, data = {}, manager = {}) {
 		const context = data.context || manager.context || [];
 
+		const rootContextId = data.rootContextId || data.RootContextID || context[0] || '';
+		const user = data.user || manager.user;
+
+		if (!rootContextId) {
+			throw new TypeError('No rootContextId defined!');
+		}
+
+		if (!user) {
+			throw new TypeError('No user defined!');
+		}
+
 		Object.defineProperties(this, {
 			...defineProtected({
-				manager,
-				type,
-				resourceId,
-				startTime: new Date(),
+				context,
 				data: {...data},
-				context: context,
-				RootContextID: data.RootContextID || data.rootContextId || context[0] || '',
-				user: data.user || manager.user
+				manager,
+				resourceId,
+				rootContextId,
+				startTime: new Date(),
+				type,
+				user,
 			})
 		});
 	}
@@ -56,7 +73,7 @@ export default class BaseAnalyticEvent {
 		return {
 			MimeType: this.type,
 			'context_path': this.context,
-			RootContextID: this.RootContextID,
+			RootContextID: this.rootContextId,
 			timestamp: this.startTime.getTime() / 1000, //send seconds back
 			user: this.user,
 			ResourceId: this.resourceId,

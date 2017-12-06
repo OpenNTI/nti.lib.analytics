@@ -1,10 +1,13 @@
 /* eslint-env jest */
 import {updateValue} from 'nti-commons';
+import Logger from 'nti-util-logger';
 
 import Messages from '../Messages';
 
 import {mockService, BATCH_EVENT} from './Api.spec';
 
+const logger = Logger.get('analytics:Messages');
+const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
 function mockStorage (items = {}) {
 	const storage = {
@@ -21,6 +24,14 @@ function mockStorage (items = {}) {
 
 
 describe('Analytic Messages Test', () => {
+
+	beforeEach(() => {
+		stub(logger, 'debug');
+		stub(logger, 'error');
+		stub(logger, 'info');
+		stub(logger, 'warn');
+	});
+
 	describe('send', () => {
 		beforeEach(() => jest.useFakeTimers());
 		afterEach(() => jest.useRealTimers());

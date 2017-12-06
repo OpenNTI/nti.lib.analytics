@@ -1,4 +1,4 @@
-const Instance = Symbol('Instance');
+const Instance = Symbol.for('Instance');
 const Events = Symbol('Events');
 
 export class Registry {
@@ -53,4 +53,3 @@ export function register (name) {
 		Registry.registerEvent(name, (...args) => event.makeFactory(...args));
 	};
 }
-

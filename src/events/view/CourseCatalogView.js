@@ -5,12 +5,18 @@ import {register} from '../Registry';
 export default class CourseCatalogView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.coursecatalogviewevent'
 
-	getData () {
-		const data = super.getData();
-
-		return {
-			...data,
-			RootContextID: this.resourceId
-		};
+	constructor (type, resourceId, data, manager) {
+		super(
+			type,
+			resourceId,
+			{
+				...(
+					/* istanbul ignore next */
+					data || {}
+				),
+				rootContextId: resourceId
+			},
+			manager
+		);
 	}
 }
