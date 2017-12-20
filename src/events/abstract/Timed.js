@@ -19,6 +19,10 @@ export default class TimedAnalyticEvent extends Base {
 		return {
 			start: (resourceId, data) => {
 				try {
+					if (this.findActiveEvent(manager, resourceId)) {
+						throw new Error(`Cannot start a new event for ${resourceId} while an existing event is still active.`);
+					}
+
 					const event = new Type(EventType, resourceId, data, manager);
 
 					manager.pushEvent(event, Immediate);

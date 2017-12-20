@@ -10,7 +10,7 @@ export default class BaseAnalyticEvent {
 	static Immediate = true
 
 	static findActiveEvent (manager, resourceId) {
-		return manager.findActiveEvent(e => e.type === this.EventType && e.resourceId === resourceId);
+		return manager.findActiveEvent(e => e.type === this.EventType && e.resourceId === resourceId && !e.isFinished);
 	}
 
 	static makeFactory (manager) {
