@@ -30,16 +30,16 @@ describe('Timed Analytic Event Tests', () => {
 
 		test('Immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
-				pushEvent: jest.fn()
+				pushEvent: jest.fn(),
+				findActiveEvent: () => ((manager.pushEvent.mock.calls || [])[0] || [])[0]
 			};
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 			stub(logger, 'error');
 			factory.start();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
-			expect(logger.error).toHaveBeenCalledWith('Could not start event, because: %s', expect.anything());
 
-			const resourceId = 'testResourceId';
+			const resourceId = 'testResourceId1';
 
 			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
@@ -58,11 +58,12 @@ describe('Timed Analytic Event Tests', () => {
 
 		test('Non-immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
-				pushEvent: jest.fn()
+				pushEvent: jest.fn(),
+				findActiveEvent: () => ((manager.pushEvent.mock.calls || [])[0] || [])[0]
 			};
 
 			const factory = TestNonImmediateEvent.makeFactory(manager);
-			const resourceId = 'testResourceId';
+			const resourceId = 'testResourceId2';
 
 			factory.start(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
 
