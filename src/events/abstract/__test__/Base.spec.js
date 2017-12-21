@@ -25,7 +25,7 @@ describe('Base Analytic Event', () => {
 
 	test('findActiveEvent predicate returns true only for the event with the same type and resourceId', () => {
 		const resourceId = 'testResource';
-
+		const isFinished = () => false;
 		let predicate;
 
 		const manager = {
@@ -34,10 +34,10 @@ describe('Base Analytic Event', () => {
 
 		TestImmediateEvent.findActiveEvent(manager, resourceId);
 
-		expect(predicate({type: 'not', resourceId: 'not'})).toBeFalsy();
-		expect(predicate({type: 'test-immediate-event', resourceId: 'not'})).toBeFalsy();
-		expect(predicate({type: 'not', resourceId})).toBeFalsy();
-		expect(predicate({type: 'test-immediate-event', resourceId})).toBeTruthy();
+		expect(predicate({type: 'not', resourceId: 'not', isFinished})).toBeFalsy();
+		expect(predicate({type: 'test-immediate-event', resourceId: 'not', isFinished})).toBeFalsy();
+		expect(predicate({type: 'not', resourceId, isFinished})).toBeFalsy();
+		expect(predicate({type: 'test-immediate-event', resourceId, isFinished})).toBeTruthy();
 	});
 
 
