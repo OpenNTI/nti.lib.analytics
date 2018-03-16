@@ -10,7 +10,7 @@ import {
 	endAnalyticsSession
 } from './Api';
 import {getEventsForManager} from './events/';
-import {Interval} from './utils';
+import {Interval, toAnalyticsPath} from './utils';
 import Messages from './Messages';
 
 
@@ -51,6 +51,9 @@ export default class AnalyticsManager extends EventEmitter {
 			this.setService(service);
 		}
 	}
+
+
+	toAnalyticsPath = toAnalyticsPath
 
 
 	setService (service) {
