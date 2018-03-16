@@ -3,6 +3,7 @@ import {Registry} from './Registry';
 import './view/AssessmentView';
 import './view/AssignmentView';
 import './view/CourseCatalogView';
+import './view/ExternalResourceView';
 import './view/NoteView';
 import './view/ProfileAboutView';
 import './view/ProfileActivityView';
