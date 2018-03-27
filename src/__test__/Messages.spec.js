@@ -3,6 +3,7 @@ import {updateValue} from 'nti-commons';
 import Logger from 'nti-util-logger';
 
 import Messages from '../Messages';
+import Hooks from '../Hooks';
 
 import {mockService, BATCH_EVENT} from './Api.spec';
 
@@ -247,6 +248,27 @@ describe('Analytic Messages Test', () => {
 			expect(seen['pending1']).toBeTruthy();
 			expect(seen['pending2']).toBeTruthy();
 		});
+
+
+		test('Triggers after batch events with the events that were sent', async () => {
+			const messages = new Messages('key');
+			const service = mockService();
+			const items = [{id: 'stack1'}, {id: 'stack2'}];
+
+			jest.spyOn(Hooks, 'triggerAfterBatchEvents');
+
+			messages.setService(service);
+			updateValue(messages, 'stack', items);
+
+			await messages.flushMessages();
+
+			const {calls} = Hooks.triggerAfterBatchEvents.mock;
+
+			expect(calls.length).toEqual(1);
+
+			expect(calls[0][0]).toEqual(items);
+		});
+
 
 		test('If the post fails with no connection the data is added to the pending', async () => {
 			const messages = new Messages('key');

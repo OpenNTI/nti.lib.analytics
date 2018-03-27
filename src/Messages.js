@@ -2,6 +2,7 @@ import {defineProtected, updateValue} from 'nti-commons';
 import Logger from 'nti-util-logger';
 
 import {sendBatchEvents} from './Api';
+import Hooks from './Hooks';
 
 const logger = Logger.get('analytics:Messages');
 
@@ -80,6 +81,8 @@ export default class Messages {
 
 		try {
 			await sendBatchEvents(this.service, data);
+
+			Hooks.triggerAfterBatchEvents(data);
 		} catch (e) {
 			logger.error('Failed to send analytic batch_event.\nError:', e, '\nData:', data);
 
