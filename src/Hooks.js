@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 const AFTER_BATCH_EVENTS = 'after-events-sent';
 
 const BUS = new EventEmitter();
+BUS.setMaxListeners(0);//don't test for memory leaks.
 
 export default class Hooks {
 	static triggerAfterBatchEvents (...args) {
@@ -17,4 +18,3 @@ export default class Hooks {
 		BUS.removeListener(AFTER_BATCH_EVENTS, fn);
 	}
 }
-
