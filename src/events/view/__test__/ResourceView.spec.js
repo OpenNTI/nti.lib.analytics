@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import {Date as DateUtil} from 'nti-commons';
+import {Date as DateUtil} from '@nti/lib-commons';
 
 import Event from '../ResourceView';
 

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import Logger from 'nti-util-logger';
+import Logger from '@nti/util-logger';
 
 import Base from '../Base';
 

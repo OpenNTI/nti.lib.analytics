@@ -1,6 +1,6 @@
 /* eslint-env jest */
-import {updateValue} from 'nti-commons';
-import Logger from 'nti-util-logger';
+import {updateValue} from '@nti/lib-commons';
+import Logger from '@nti/util-logger';
 
 import Messages from '../Messages';
 import Hooks from '../Hooks';

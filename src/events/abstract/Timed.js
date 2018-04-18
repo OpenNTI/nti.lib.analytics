@@ -1,5 +1,5 @@
-import {defineProtected, updateValue} from 'nti-commons';
-import Logger from 'nti-util-logger';
+import {defineProtected, updateValue} from '@nti/lib-commons';
+import Logger from '@nti/util-logger';
 
 import { getError } from '../../utils';
 

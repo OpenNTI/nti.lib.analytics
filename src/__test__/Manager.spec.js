@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import {updateValue} from 'nti-commons';
+import {updateValue} from '@nti/lib-commons';
 
 import Manager from '../Manager';
 

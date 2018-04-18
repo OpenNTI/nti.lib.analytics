@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 
-import {defineProtected, definePublic, updateValue} from 'nti-commons';
-import Logger from 'nti-util-logger';
+import {defineProtected, definePublic, updateValue} from '@nti/lib-commons';
+import Logger from '@nti/util-logger';
 
 
 import {
