@@ -339,12 +339,6 @@ describe('Analytics Manager Test', () => {
 	});
 
 	describe('resumeEvents', () => {
-		test('throws if not suspended', () => {
-			const manager = getManager('resume-throws-if-not-suspended');
-
-			expect(() => manager.resumeEvents()).toThrow();
-		});
-
 		test('resumes messages too', () => {
 			const manager = getManager('resumes-messages-too');
 
