@@ -171,7 +171,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 	resumeEvents () {
 		//if we aren't suspended there's nothing to do.
-		if (!this.suspended) { throw new Error('Calling resume on analytics that are not suspended. Likely a developer error.'); }
+		if (!this.suspended) { return; }
 
 		logger.debug('Resuming Analytics Manager & events...');
 		updateValue(this, 'suspended', false);
