@@ -19,6 +19,10 @@ export default class TimedAnalyticEvent extends Base {
 		return {
 			start: (resourceId, data) => {
 				try {
+					if (manager.disabled) {
+						return;
+					}
+
 					if (this.findActiveEvent(manager, resourceId)) {
 						throw new Error(`Cannot start a new event for ${resourceId} while an existing event is still active.`);
 					}
@@ -33,6 +37,10 @@ export default class TimedAnalyticEvent extends Base {
 
 			stop: (resourceId, data) => {
 				try {
+					if (manager.disabled) {
+						return;
+					}
+
 					const event = this.findActiveEvent(manager, resourceId);
 
 					if (!event) {
@@ -47,6 +55,10 @@ export default class TimedAnalyticEvent extends Base {
 
 			update: (resourceId, data) => {
 				try {
+					if (manager.disabled) {
+						return;
+					}
+
 					const event = this.findActiveEvent(manager, resourceId);
 
 					if (!event) {

@@ -124,6 +124,9 @@ export default class AnalyticsManager extends EventEmitter {
 
 	onHeartBeat (forceUpdate) {
 		const remaining = [];
+		if (this.disabled) {
+			return;
+		}
 
 		logger.debug('[onHeartBeat] Active Events: %o', this.activeEvents);
 
@@ -153,7 +156,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 	suspendEvents () {
 		//if we already are suspended, there's nothing to do.
-		if (this.suspended) { return; }
+		if (this.suspended || this.disabled) { return; }
 
 		logger.debug('Suspending Analytics Manager & events...');
 
@@ -171,7 +174,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 	resumeEvents () {
 		//if we aren't suspended there's nothing to do.
-		if (!this.suspended) { return; }
+		if (!this.suspended || this.disabled) { return; }
 
 		logger.debug('Resuming Analytics Manager & events...');
 		updateValue(this, 'suspended', false);
