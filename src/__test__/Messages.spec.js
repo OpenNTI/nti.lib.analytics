@@ -13,7 +13,8 @@ const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 function mockStorage (items = {}) {
 	const storage = {
 		setItem: () => {},
-		getItem: (name) => items[name]
+		getItem: (name) => items[name],
+		removeItem: (name) => delete items[name]
 	};
 
 	jest.spyOn(storage, 'setItem');
