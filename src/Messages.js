@@ -106,8 +106,12 @@ export default class Messages {
 	getPending () {
 		if (!this.storage) { return this.pending; }
 
+		const { key, storage } = this;
+
 		try {
-			const stored = this.storage.getItem(this.key);
+			const stored = storage.getItem(key);
+			storage.removeItem(key); //prevent other tabs from operating on this data at the same time.
+
 			const pending = stored ? JSON.parse(stored) : [];
 
 			if (!Array.isArray(pending)) { throw new Error('Invalid analytic messages stored.'); }
