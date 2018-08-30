@@ -67,14 +67,14 @@ export default class Messages {
 	async flushMessages () {
 		const data = this.getDataForBatch();
 
-		//if there's no data, no need to send
-		if (!data.length) { return; }
+		//if there's no data, no need to send (also skip if busy)
+		if (!data.length || this.busy) { return; }
 
 		//clear all pending, since we are fixing to try to send them
 		this.clear();
 
 		//if we don't have a service or are suspended mark the data as pending
-		if (!this.service || this.suspended || this.busy) {
+		if (!this.service || this.suspended) {
 			this.setPending(data);
 			return;
 		}
