@@ -74,12 +74,13 @@ export default class Messages {
 		this.clear();
 
 		//if we don't have a service or are suspended mark the data as pending
-		if (!this.service || this.suspended) {
+		if (!this.service || this.suspended || this.busy) {
 			this.setPending(data);
 			return;
 		}
 
 		try {
+			this.busy = true; //do not attempt to flush again until after we finish this flush
 			await sendBatchEvents(this.service, data);
 
 			Hooks.triggerAfterBatchEvents(data);
@@ -91,6 +92,8 @@ export default class Messages {
 			if (e && e.statusCode === 0) {
 				this.setPending(data);
 			}
+		} finally {
+			delete this.busy;
 		}
 	}
 
