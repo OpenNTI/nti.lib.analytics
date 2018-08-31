@@ -1,6 +1,6 @@
 {
   "name": "@nti/lib-analytics",
-  "version": "2.5.0-alpha",
+  "version": "2.5.0",
   "author": "nextthought",
   "license": "UNLICENSED",
   "description": "Provides a javascript analytics framework for apps.",
