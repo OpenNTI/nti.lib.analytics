@@ -86,13 +86,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 
 	findActiveEvent (predicate) {
-		for (let event of this.activeEvents) {
-			if (predicate(event)) {
-				return event;
-			}
-		}
-
-		return null;
+		return this.activeEvents.find(predicate) || null;
 	}
 
 
