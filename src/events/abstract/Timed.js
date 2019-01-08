@@ -138,6 +138,10 @@ export default class TimedAnalyticEvent extends Base {
 	resume () {
 		updateValue(this, 'suspended', false);
 		updateValue(this, 'startTime', new Date());
+		if (this.isFinished()) {
+			logger.warn('Resuming an already-finished event. Resetting (removing) event endTime');
+			updateValue(this, 'endTime', null);
+		}
 		updateValue(this, 'updatedCount', 0);
 		updateValue(this, 'heartBeatCount', 0);
 	}
