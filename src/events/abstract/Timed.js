@@ -74,7 +74,6 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
-
 	constructor (type, resourceId, data, manager) {
 		super(type, resourceId, data, manager);
 
@@ -113,10 +112,14 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
+	finish () {
+		updateValue(this, 'endTime', new Date());
+	}
+
+
 	stop (data) {
 		this.updateData(data);
-
-		updateValue(this, 'endTime', new Date());
+		this.finish();
 	}
 
 
@@ -126,12 +129,14 @@ export default class TimedAnalyticEvent extends Base {
 
 
 	shouldUpdate () {
-		return !this.suspended && (this.heartBeatCount >= this.updatedCount || this.endTime);
+		// ignoring this.suspended because these events finish on suspend
+		return this.heartBeatCount >= this.updatedCount || this.endTime;
 	}
 
 
 	suspend () {
 		updateValue(this, 'suspended', true);
+		this.finish();
 	}
 
 
@@ -139,7 +144,7 @@ export default class TimedAnalyticEvent extends Base {
 		updateValue(this, 'suspended', false);
 		updateValue(this, 'startTime', new Date());
 		if (this.isFinished()) {
-			logger.warn('Resuming an already-finished event. Resetting (removing) event endTime');
+			logger.debug('Resuming an already-finished event. Resetting (removing) event endTime');
 			updateValue(this, 'endTime', null);
 		}
 		updateValue(this, 'updatedCount', 0);
