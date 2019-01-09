@@ -108,6 +108,26 @@ describe('Timed Analytic Event Tests', () => {
 			expect(event.stop).toHaveBeenCalledWith(data);
 		});
 
+		test('Resuming a finished event does not result in negative duration', async () => {
+			// constructor (type, resourceId, data, manager) {
+			const event = new TestImmediateEvent(
+				'test-event-type',
+				'test-resource-id',
+				{
+					// required by the event object, but not important for our purposes
+					rootContextId: 'test-root-context-id', user: 'foo'
+				}
+			);
+
+			const wait = (cb, duration = 100) => new Promise(resolve => setTimeout(() => {resolve(cb());}, duration));
+			event.stop();
+			await wait(() => event.suspend());
+			await wait(() => event.resume());
+
+			const {timelength} = event.getData();
+			expect(timelength).toBeGreaterThanOrEqual(0);
+		});
+
 		test('update throws if it does not find an active event', () => {
 			const manager = {
 				findActiveEvent: () => null
