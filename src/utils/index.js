@@ -1,5 +1,11 @@
 export Interval from './Interval';
 
+function getAnalyticsId (contextPart) {
+	if (!contextPart) { return null; }
+
+	return contextPart.analyticsId || contextPart.ntiid || (typeof contextPart === 'string' ? contextPart : null);
+}
+
 export function filterContextPath (context, resourceId) {
 	let first = context[0];
 	let last = context[context.length - 1];
@@ -9,7 +15,7 @@ export function filterContextPath (context, resourceId) {
 	// Its OKAY if its not. (Use case: Clicking a `Card`, the
 	// path is everything BUT the resource, and the cards' target
 	// is the resource)
-	last = (last && (last.ntiid === resourceId || last === resourceId)) ? -1 : undefined;
+	last = (last && (getAnalyticsId(last) === resourceId)) ? -1 : undefined;
 
 	//if (!last) {
 	// console.debug('The last entry in the context path is not the resource.');
@@ -32,7 +38,7 @@ export function filterContextPath (context, resourceId) {
 
 export function toAnalyticsPath (context, resourceId) {
 	return filterContextPath(context, resourceId)
-		.map(x=> x.ntiid || (typeof x === 'string' ? x : null))
+		.map(x=> getAnalyticsId(x))
 		.filter(x=>x);
 }
 
