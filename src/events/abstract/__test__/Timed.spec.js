@@ -91,7 +91,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			factory.stop('test-resource-id');
 
-			expect(logger.error).toHaveBeenCalledWith('Could not stop event, because: %s', expect.anything());
+			expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Could not stop event'), expect.anything(), expect.anything());
 		});
 
 		test('Stop calls stop on the event it finds', () => {
@@ -138,7 +138,7 @@ describe('Timed Analytic Event Tests', () => {
 			stub(logger, 'error');
 
 			factory.update('test-resource-id', {});
-			expect(logger.error).toHaveBeenCalledWith('Could not update event, because: %s', expect.anything());
+			expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Could not update event'), expect.anything(), expect.anything());
 		});
 
 		test('update calls updateData on the event it finds', () => {
