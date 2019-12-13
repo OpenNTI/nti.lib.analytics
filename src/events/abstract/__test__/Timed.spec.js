@@ -1,10 +1,16 @@
 /* eslint-env jest */
 import Logger from '@nti/util-logger';
+import {Date as DateUtils} from '@nti/lib-commons';
 
 import Timed from '../Timed';
 
+const {MockDate} = DateUtils;
+
 const logger = Logger.get('analytics:event');
 const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
+const getSeconds = (t) => {
+	return (new MockDate.OriginalDate(t)).getTime() / 1000;
+};
 
 class TestImmediateEvent extends Timed {
 	static EventType = 'test-immediate-event'
@@ -153,6 +159,70 @@ describe('Timed Analytic Event Tests', () => {
 			factory.update('test-resource-id', data);
 
 			expect(event.updateData).toHaveBeenCalledWith(data);
+		});
+	});
+
+	describe('sleep/wake', () => {
+		const makeEvent = () => new Timed('test', 'resourceId', {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
+		const mockDates = {
+			start: 'December 1, 2019 12:00:00',
+			afterStart: 'December 1, 2019 12:30:00',
+			sleep: 'December 1, 2019 18:00:00',
+			afterSleep: 'December 1, 2019 18:30:00',
+			wakeUp: 'December 10, 2019 12:00:00',
+			afterWakeUp: 'December 10, 2019 12:30:00'
+		};
+
+		beforeEach(() => {
+			DateUtils.MockDate.install();
+		});
+
+		afterEach(() => {
+			DateUtils.MockDate.uninstall();
+		});
+
+		test('ends event on sleep, but doesn\'t close it', () => {
+			MockDate.setDestination(mockDates.start).hit88MPH();
+
+			const event = makeEvent();
+
+			MockDate.setDestination(mockDates.afterStart).illBeBack();
+
+			let data = event.getData();
+
+			expect(data.timestamp).toEqual(getSeconds(mockDates.start));
+			expect(data.timelength).toEqual(getSeconds(mockDates.afterStart) - getSeconds(mockDates.start));
+
+			MockDate.setDestination(mockDates.sleep).illBeBack();
+			event.sleep();
+			MockDate.setDestination(mockDates.afterSleep).hit88MPH();
+
+			data = event.getData();
+
+			expect(data.timestamp).toEqual(getSeconds(mockDates.start));
+			expect(data.timelength).toEqual(getSeconds(mockDates.sleep) - getSeconds(mockDates.start));
+			expect(event.isFinished()).toBe(false);
+		});
+
+		test('updates timestamp, and timelength on wake', () => {
+			MockDate.setDestination(mockDates.start).hit88MPH();
+
+			const event = makeEvent();
+
+			MockDate.setDestination(mockDates.afterStart).illBeBack();
+
+			MockDate.setDestination(mockDates.sleep).illBeBack();
+			event.sleep();
+			MockDate.setDestination(mockDates.afterSleep).hit88MPH();
+
+			MockDate.setDestination(mockDates.wakeUp).illBeBack();
+			event.wakeUp();
+			MockDate.setDestination(mockDates.afterWakeUp).hit88MPH();
+
+			const data = event.getData();
+
+			expect(data.timestamp).toEqual(getSeconds(mockDates.wakeUp));
+			expect(data.timelength).toEqual(getSeconds(mockDates.afterWakeUp) - getSeconds(mockDates.wakeUp));
 		});
 	});
 
