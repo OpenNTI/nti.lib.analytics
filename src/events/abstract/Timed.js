@@ -92,7 +92,7 @@ export default class TimedAnalyticEvent extends Base {
 	getData () {
 		const data = super.getData();
 		const {startTime} = this;
-		const endTime = this.endTime || new Date();
+		const endTime = this.sleepTime || this.endTime || new Date();
 
 		return {
 			...data,
@@ -116,6 +116,15 @@ export default class TimedAnalyticEvent extends Base {
 		updateValue(this, 'endTime', new Date());
 	}
 
+	sleep (sleepTime) {
+		updateValue(this, 'sleepTime', new Date());
+	}
+
+	wakeUp () {
+		updateValue(this, 'startTime', new Date());
+		updateValue(this, 'sleepTime', null);
+	}
+
 
 	stop (data) {
 		this.updateData(data);
@@ -134,9 +143,9 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
-	suspend () {
+	suspend (time) {
 		updateValue(this, 'suspended', true);
-		this.finish();
+		this.finish(time);
 	}
 
 

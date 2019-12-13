@@ -17,6 +17,7 @@ import Messages from './Messages';
 const logger = Logger.get('analytics:Manager');
 
 const HEARTBEAT = 10000;
+const SLEEP_TIMEOUT = HEARTBEAT * 2;
 
 const registeredNames = {};
 
@@ -116,11 +117,29 @@ export default class AnalyticsManager extends EventEmitter {
 	}
 
 
+	stopHeartBeat () {
+		this.heartbeat.stop();
+		this.lastHeartBeat = null;
+	}
+
+
 	onHeartBeat (forceUpdate) {
 		const remaining = [];
+
 		if (this.disabled) {
 			return;
 		}
+
+		const now = new Date();
+		const diff = this.lastHeartBeat ? now - this.lastHeartBeat : 0;
+		const wasSleeping = diff > SLEEP_TIMEOUT;
+
+		if (wasSleeping) {
+			for (let event of this.activeEvents) {
+				sleepEvent(event, this.lastHeartBeat);
+			}
+		}
+
 
 		logger.debug('[onHeartBeat] Active Events: %o', this.activeEvents);
 
@@ -140,10 +159,18 @@ export default class AnalyticsManager extends EventEmitter {
 			}
 		}
 
+		if (wasSleeping) {
+			for (let event of remaining) {
+				wakeUpEvent(event);
+			}
+		}
+
 		updateValue(this, 'activeEvents', remaining);
 
+		this.lastHeartBeat = now;
+
 		if (!this.activeEvents.length) {
-			this.heartbeat.stop();
+			this.stopHeartBeat();
 		}
 	}
 
@@ -158,7 +185,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 		updateValue(this, 'suspended', true);
 		this.messages.suspend();
-		this.heartbeat.stop();
+		this.stopHeartBeat();
 
 		for (let event of this.activeEvents) {
 			suspendEvent(event);
@@ -222,4 +249,12 @@ function suspendEvent (event) {
 function resumeEvent (event) {
 	/* istanbul ignore else */
 	if (event.resume) { event.resume(); }
+}
+
+function sleepEvent (event, sleepTime) {
+	if (event.sleep) { event.sleep(sleepTime); }
+}
+
+function wakeUpEvent (event) {
+	if (event.wakeUp) { event.wakeUp();}
 }
