@@ -1,9 +1,11 @@
 /* eslint-env jest */
-import {updateValue} from '@nti/lib-commons';
+import {updateValue, Date as DateUtils} from '@nti/lib-commons';
 
 import Manager from '../Manager';
 
 import {mockService, BEGIN_SESSION, END_SESSION} from './Api.spec';
+
+const {MockDate} = DateUtils;
 
 function mockEvent (data, finished, shouldUpdate) {
 	const event = {
@@ -12,12 +14,17 @@ function mockEvent (data, finished, shouldUpdate) {
 		isFinished: () => finished,
 		shouldUpdate: () => shouldUpdate,
 		suspend: () => {},
-		resume: () => {}
+		resume: () => {},
+		sleep: () => {},
+		wakeUp: () => {}
 	};
 
 	jest.spyOn(event, 'onDataSent');
 	jest.spyOn(event, 'suspend');
 	jest.spyOn(event, 'resume');
+
+	jest.spyOn(event, 'sleep');
+	jest.spyOn(event, 'wakeUp');
 
 	return event;
 }
@@ -283,6 +290,33 @@ describe('Analytics Manager Test', () => {
 
 			expect(manager.activeEvents.length).toEqual(1);
 			expect(manager.activeEvents[0]).toEqual(event);
+		});
+
+		test('If heartbeats are too far apart, sleep active events and wake them up', () => {
+			const dates = {
+				'start': 'December 1, 2019 12:00:00',
+				'sleep': 'December 1, 2019 1:00:00',
+				'wake': 'December 8, 2019 12:00:00'
+			};
+
+			MockDate.install(dates.start);
+
+			const manager = getManager('sleep-wake');
+			const data = {test: 'b'};
+			const event = mockEvent(data, false, true);
+
+			updateValue(manager, 'activeEvents', [event]);
+
+			manager.onHeartBeat();
+			MockDate.setNow(dates.sleep);
+
+			MockDate.setNow(dates.wake);
+			manager.onHeartBeat();
+
+			expect(event.sleep).toHaveBeenCalled();
+			expect(event.wakeUp).toHaveBeenCalled();
+
+			MockDate.uninstall();
 		});
 	});
 
