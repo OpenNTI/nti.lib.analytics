@@ -244,7 +244,7 @@ function sendEvent (messages, event, now) {
 }
 
 function eventHeartBeat (event) {
-	if (event.onheartBeat) { event.onHeartBeat(); }
+	if (event.onHeartBeat) { event.onHeartBeat(); }
 }
 
 function suspendEvent (event, now) {
