@@ -139,7 +139,7 @@ export default class TimedAnalyticEvent extends Base {
 
 	shouldUpdate () {
 		// ignoring this.suspended because these events finish on suspend
-		return this.heartBeatCount >= this.updatedCount || this.endTime;
+		return this.heartBeatCount >= this.updatedCount || this.endTime || this.sleepTime;
 	}
 
 
