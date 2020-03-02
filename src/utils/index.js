@@ -1,4 +1,4 @@
-export Interval from './Interval';
+export { default as Interval } from './Interval';
 
 function getAnalyticsId (contextPart) {
 	if (!contextPart) { return null; }
