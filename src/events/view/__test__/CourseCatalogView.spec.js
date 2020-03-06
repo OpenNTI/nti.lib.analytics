@@ -36,7 +36,7 @@ describe('CourseCatalogView Event', () => {
 			'ResourceId': 'id',
 			'RootContextID': 'id',
 			'context_path': [],
-			'timelength': 0,
+			'Duration': 0,
 			'timestamp': now.getTime() / 1000,
 			'user': 'foobar',
 		});

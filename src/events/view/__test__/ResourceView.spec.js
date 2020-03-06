@@ -37,7 +37,7 @@ describe('ResourceView Event', () => {
 			'ResourceId': 'id',
 			'RootContextID': '1:2:3',
 			'context_path': ['1:2:3'],
-			'timelength': 0,
+			'Duration': 0,
 			'timestamp': now.getTime() / 1000,
 			'user': 'foobar',
 		});

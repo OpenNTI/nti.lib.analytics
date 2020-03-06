@@ -37,7 +37,7 @@ describe('VideoWatch Event', () => {
 			'ResourceId': 'id',
 			'RootContextID': '1:2:3',
 			'context_path': [],
-			'time_length': null,
+			'Duration': null,
 			'timestamp': now.getTime() / 1000,
 			'user': 'foobar',
 			'video_end_time': undefined,

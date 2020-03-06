@@ -130,8 +130,8 @@ describe('Timed Analytic Event Tests', () => {
 			await wait(() => event.suspend());
 			await wait(() => event.resume());
 
-			const {timelength} = event.getData();
-			expect(timelength).toBeGreaterThanOrEqual(0);
+			const {Duration} = event.getData();
+			expect(Duration).toBeGreaterThanOrEqual(0);
 		});
 
 		test('update throws if it does not find an active event', () => {
@@ -191,7 +191,7 @@ describe('Timed Analytic Event Tests', () => {
 			let data = event.getData();
 
 			expect(data.timestamp).toEqual(getSeconds(mockDates.start));
-			expect(data.timelength).toEqual(getSeconds(mockDates.afterStart) - getSeconds(mockDates.start));
+			expect(data.Duration).toEqual(getSeconds(mockDates.afterStart) - getSeconds(mockDates.start));
 
 			MockDate.setDestination(mockDates.sleep).illBeBack();
 			event.sleep();
@@ -200,11 +200,11 @@ describe('Timed Analytic Event Tests', () => {
 			data = event.getData();
 
 			expect(data.timestamp).toEqual(getSeconds(mockDates.start));
-			expect(data.timelength).toEqual(getSeconds(mockDates.sleep) - getSeconds(mockDates.start));
+			expect(data.Duration).toEqual(getSeconds(mockDates.sleep) - getSeconds(mockDates.start));
 			expect(event.isFinished()).toBe(false);
 		});
 
-		test('updates timestamp, and timelength on wake', () => {
+		test('updates timestamp, and Duration on wake', () => {
 			MockDate.setDestination(mockDates.start).hit88MPH();
 
 			const event = makeEvent();
@@ -222,7 +222,7 @@ describe('Timed Analytic Event Tests', () => {
 			const data = event.getData();
 
 			expect(data.timestamp).toEqual(getSeconds(mockDates.wakeUp));
-			expect(data.timelength).toEqual(getSeconds(mockDates.afterWakeUp) - getSeconds(mockDates.wakeUp));
+			expect(data.Duration).toEqual(getSeconds(mockDates.afterWakeUp) - getSeconds(mockDates.wakeUp));
 		});
 	});
 

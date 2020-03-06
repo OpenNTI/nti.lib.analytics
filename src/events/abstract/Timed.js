@@ -96,7 +96,7 @@ export default class TimedAnalyticEvent extends Base {
 
 		return {
 			...data,
-			timelength: (endTime - startTime) / 1000
+			Duration: (endTime - startTime) / 1000
 		};
 	}
 
