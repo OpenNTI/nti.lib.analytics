@@ -140,6 +140,14 @@ export default class AnalyticsManager extends EventEmitter {
 			}
 		}
 
+		//TESTING WHEN A COMPUTER GOES TO SLEEP WHILE A HEARTBEAT
+		//IS RUNNING. DO NOT RELEASE
+		console.log('COUNTING TO ONE BILLION');//eslint-disable-line
+		for (let i = 0; i < 10000000000; i += 1) {
+			//${i} mississippi
+		}
+		console.log('ONE BILLION. PHEW');//eslint-disable-line
+
 
 		logger.debug('[onHeartBeat] Active Events: %o', this.activeEvents);
 
