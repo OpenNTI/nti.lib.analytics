@@ -193,8 +193,7 @@ describe('Timed Analytic Event Tests', () => {
 			expect(data.timestamp).toEqual(getSeconds(mockDates.start));
 			expect(data.Duration).toEqual(getSeconds(mockDates.afterStart) - getSeconds(mockDates.start));
 
-			MockDate.setDestination(mockDates.sleep).illBeBack();
-			event.sleep();
+			event.sleep(new Date(mockDates.sleep));
 			MockDate.setDestination(mockDates.afterSleep).hit88MPH();
 
 			data = event.getData();
@@ -211,12 +210,10 @@ describe('Timed Analytic Event Tests', () => {
 
 			MockDate.setDestination(mockDates.afterStart).illBeBack();
 
-			MockDate.setDestination(mockDates.sleep).illBeBack();
-			event.sleep();
+			event.sleep(new Date(mockDates.sleep));
 			MockDate.setDestination(mockDates.afterSleep).hit88MPH();
 
-			MockDate.setDestination(mockDates.wakeUp).illBeBack();
-			event.wakeUp();
+			event.wakeUp(new Date(mockDates.wakeUp));
 			MockDate.setDestination(mockDates.afterWakeUp).hit88MPH();
 
 			const data = event.getData();

@@ -89,10 +89,10 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
-	getData () {
+	getData (now) {
 		const data = super.getData();
 		const {startTime} = this;
-		const endTime = this.sleepTime || this.endTime || new Date();
+		const endTime = this.sleepTime || this.endTime || now || new Date();
 
 		return {
 			...data,
@@ -112,16 +112,16 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
-	finish () {
-		updateValue(this, 'endTime', new Date());
+	finish (now) {
+		updateValue(this, 'endTime', now || new Date());
 	}
 
 	sleep (sleepTime) {
-		updateValue(this, 'sleepTime', new Date());
+		updateValue(this, 'sleepTime', sleepTime || new Date());
 	}
 
-	wakeUp () {
-		updateValue(this, 'startTime', new Date());
+	wakeUp (now) {
+		updateValue(this, 'startTime', now || new Date());
 		updateValue(this, 'sleepTime', null);
 	}
 
@@ -143,15 +143,15 @@ export default class TimedAnalyticEvent extends Base {
 	}
 
 
-	suspend (time) {
+	suspend (now) {
 		updateValue(this, 'suspended', true);
-		this.finish(time);
+		this.finish(now);
 	}
 
 
-	resume () {
+	resume (now) {
 		updateValue(this, 'suspended', false);
-		updateValue(this, 'startTime', new Date());
+		updateValue(this, 'startTime', now || new Date());
 		if (this.isFinished()) {
 			logger.debug('Resuming an already-finished event. Resetting (removing) event endTime');
 			updateValue(this, 'endTime', null);

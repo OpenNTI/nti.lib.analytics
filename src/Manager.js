@@ -131,22 +131,26 @@ export default class AnalyticsManager extends EventEmitter {
 		}
 
 		const now = new Date();
-		const diff = this.lastHeartBeat ? now - this.lastHeartBeat : 0;
+		const lastHeartBeat = this.lastHeartBeat;
+
+		this.lastHeartBeat = now;
+
+		const diff = lastHeartBeat ? (now - lastHeartBeat) : 0;
 		const wasSleeping = diff > SLEEP_TIMEOUT;
 
 		if (wasSleeping) {
 			for (let event of this.activeEvents) {
-				sleepEvent(event, this.lastHeartBeat);
+				sleepEvent(event, lastHeartBeat, now);
 			}
 		}
 
 		//TESTING WHEN A COMPUTER GOES TO SLEEP WHILE A HEARTBEAT
 		//IS RUNNING. DO NOT RELEASE
-		console.log('COUNTING TO ONE BILLION');//eslint-disable-line
-		for (let i = 0; i < 10000000000; i += 1) {
-			//${i} mississippi
-		}
-		console.log('ONE BILLION. PHEW');//eslint-disable-line
+		// console.log('COUNTING TO ONE BILLION');//eslint-disable-line
+		// for (let i = 0; i < 10000000000; i += 1) {
+		// 	//${i} mississippi
+		// }
+		// console.log('ONE BILLION. PHEW');//eslint-disable-line
 
 
 		logger.debug('[onHeartBeat] Active Events: %o', this.activeEvents);
@@ -156,7 +160,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 			if (event.shouldUpdate() || forceUpdate) {
 				logger.debug('[onHeartBeat] Sending Event: %o (because: shouldUpdate: %s, force: %s)', event, event.shouldUpdate(), forceUpdate);
-				sendEvent(this.messages, event);
+				sendEvent(this.messages, event, now);
 			}
 
 			if (!event.isFinished()) {
@@ -169,13 +173,11 @@ export default class AnalyticsManager extends EventEmitter {
 
 		if (wasSleeping) {
 			for (let event of remaining) {
-				wakeUpEvent(event);
+				wakeUpEvent(event, now);
 			}
 		}
 
 		updateValue(this, 'activeEvents', remaining);
-
-		this.lastHeartBeat = now;
 
 		if (!this.activeEvents.length) {
 			this.stopHeartBeat();
@@ -189,6 +191,8 @@ export default class AnalyticsManager extends EventEmitter {
 
 		logger.debug('Suspending Analytics Manager & events...');
 
+		const now = new Date();
+
 		this.onHeartBeat(true);
 
 		updateValue(this, 'suspended', true);
@@ -196,7 +200,7 @@ export default class AnalyticsManager extends EventEmitter {
 		this.stopHeartBeat();
 
 		for (let event of this.activeEvents) {
-			suspendEvent(event);
+			suspendEvent(event, now);
 		}
 	}
 
@@ -208,11 +212,13 @@ export default class AnalyticsManager extends EventEmitter {
 		logger.debug('Resuming Analytics Manager & events...');
 		updateValue(this, 'suspended', false);
 
+		const now = new Date();
+
 		this.messages.resume();
 		this.heartbeat.start();
 
 		for (let event of this.activeEvents) {
-			resumeEvent(event);
+			resumeEvent(event, now);
 		}
 
 		this.onHeartBeat(true);
@@ -241,8 +247,8 @@ export default class AnalyticsManager extends EventEmitter {
 
 }
 
-function sendEvent (messages, event) {
-	messages.send(event.getData());
+function sendEvent (messages, event, now) {
+	messages.send(event.getData(now));
 	event.onDataSent();
 }
 
@@ -250,19 +256,19 @@ function eventHeartBeat (event) {
 	if (event.onheartBeat) { event.onHeartBeat(); }
 }
 
-function suspendEvent (event) {
-	if (event.suspend) { event.suspend(); }
+function suspendEvent (event, now) {
+	if (event.suspend) { event.suspend(now); }
 }
 
-function resumeEvent (event) {
+function resumeEvent (event, now) {
 	/* istanbul ignore else */
-	if (event.resume) { event.resume(); }
+	if (event.resume) { event.resume(now); }
 }
 
 function sleepEvent (event, sleepTime) {
 	if (event.sleep) { event.sleep(sleepTime); }
 }
 
-function wakeUpEvent (event) {
-	if (event.wakeUp) { event.wakeUp();}
+function wakeUpEvent (event, now) {
+	if (event.wakeUp) { event.wakeUp(now);}
 }
