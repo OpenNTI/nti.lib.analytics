@@ -42,6 +42,12 @@ export function beginAnalyticsSession (service) {
 export function endAnalyticsSession (service) {
 	const link = getEndSessionLink(service);
 
+	if (global?.navigator?.sendBeacon) {
+		return link ?
+			global.navigator.sendBeacon(link, {}) :
+			Promise.reject('No link to end an analytics session');
+	}
+
 	return link ?
 		service.post(link, {}) :
 		Promise.reject('No link to end an analytics session');
