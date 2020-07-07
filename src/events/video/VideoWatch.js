@@ -13,8 +13,7 @@ export function getBaseVideoData (data) {
 	};
 }
 
-@register('VideoWatch')
-export default class VideoWatch extends Timed {
+class VideoWatch extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.watchvideoevent'
 
 	video = true
@@ -37,3 +36,5 @@ export default class VideoWatch extends Timed {
 		return !this.suspended;
 	}
 }
+
+export default register('VideoWatch', VideoWatch);

@@ -49,7 +49,13 @@ export class Registry {
 }
 
 export function register (name) {
-	return function dectorator (event) {
+	const decorator = (event) => {
 		Registry.registerEvent(name, (...args) => event.makeFactory(...args));
 	};
+
+	if (arguments.length > 1) {
+		return decorator(arguments[1]);
+	}
+
+	return decorator;
 }

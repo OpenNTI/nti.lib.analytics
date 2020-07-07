@@ -1,8 +1,7 @@
 import Timed from '../abstract/Timed';
 import {register} from '../Registry';
 
-@register('ProfileMembershipView')
-export default class ProfileMembershipView extends Timed {
+class ProfileMembershipView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.profilemembershipviewevent'
 
 	getData () {
@@ -14,3 +13,5 @@ export default class ProfileMembershipView extends Timed {
 		};
 	}
 }
+
+export default register('ProfileMembershipView', ProfileMembershipView);

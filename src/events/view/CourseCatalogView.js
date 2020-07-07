@@ -1,8 +1,7 @@
 import Timed from '../abstract/Timed';
 import {register} from '../Registry';
 
-@register('CourseCatalogView')
-export default class CourseCatalogView extends Timed {
+class CourseCatalogView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.coursecatalogviewevent'
 
 	constructor (type, resourceId, data, manager) {
@@ -20,3 +19,5 @@ export default class CourseCatalogView extends Timed {
 		);
 	}
 }
+
+export default register('CourseCatalogView', CourseCatalogView);

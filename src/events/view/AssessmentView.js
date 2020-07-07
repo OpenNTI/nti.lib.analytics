@@ -1,8 +1,7 @@
 import Timed from '../abstract/Timed';
 import {register} from '../Registry';
 
-@register('AssessmentView')
-export default class AssessmentView extends Timed {
+class AssessmentView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.selfassessmentviewevent'
 
 	getData () {
@@ -16,3 +15,5 @@ export default class AssessmentView extends Timed {
 		};
 	}
 }
+
+export default register('AssessmentView', AssessmentView);

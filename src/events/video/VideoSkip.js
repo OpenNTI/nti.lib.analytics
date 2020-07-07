@@ -3,8 +3,7 @@ import {register} from '../Registry';
 
 import {getBaseVideoData} from './VideoWatch';
 
-@register('VideoSkip')
-export default class VideoSkip extends Base {
+class VideoSkip extends Base {
 	static EventType = 'application/vnd.nextthought.analytics.skipvideoevent'
 
 	video = true
@@ -19,3 +18,5 @@ export default class VideoSkip extends Base {
 		};
 	}
 }
+
+export default register('VideoSkip', VideoSkip);

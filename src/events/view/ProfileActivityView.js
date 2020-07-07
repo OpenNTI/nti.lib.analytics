@@ -1,8 +1,7 @@
 import Timed from '../abstract/Timed';
 import {register} from '../Registry';
 
-@register('ProfileActivityView')
-export default class ProfileActivityView extends Timed {
+class ProfileActivityView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.profileactivityviewevent'
 
 	getData () {
@@ -14,3 +13,5 @@ export default class ProfileActivityView extends Timed {
 		};
 	}
 }
+
+export default register('ProfileActivityView', ProfileActivityView);

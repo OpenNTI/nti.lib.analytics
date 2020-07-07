@@ -1,8 +1,7 @@
 import Base from '../abstract/Base';
 import {register} from '../Registry';
 
-@register('VideoSpeedChange')
-export default class VideoSpeedChange extends Base {
+class VideoSpeedChange extends Base {
 	static EventType = 'application/vnd.nextthought.analytics.videoplayspeedchange'
 
 	video = true
@@ -19,3 +18,5 @@ export default class VideoSpeedChange extends Base {
 		};
 	}
 }
+
+export default register('VideoSpeedChange', VideoSpeedChange);

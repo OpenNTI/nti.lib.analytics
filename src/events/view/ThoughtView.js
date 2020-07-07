@@ -1,8 +1,7 @@
 import Timed from '../abstract/Timed';
 import {register} from '../Registry';
 
-@register('ThoughtView')
-export default class ThoughtView extends Timed {
+class ThoughtView extends Timed {
 	static EventType = 'application/vnd.nextthought.analytics.blogviewevent'
 
 	getData () {
@@ -14,3 +13,5 @@ export default class ThoughtView extends Timed {
 		};
 	}
 }
+
+export default register('ThoughtView', ThoughtView);
