@@ -54,7 +54,8 @@ export function register (name) {
 	};
 
 	if (arguments.length > 1) {
-		return decorator(arguments[1]);
+		const [, target] = arguments;
+		return decorator(target) ?? target;
 	}
 
 	return decorator;
