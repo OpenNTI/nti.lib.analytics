@@ -1,7 +1,7 @@
-import {defineProtected, updateValue} from '@nti/lib-commons';
+import { defineProtected, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
-import {sendBatchEvents} from './Api';
+import { sendBatchEvents } from './Api';
 import Hooks from './Hooks';
 
 const logger = Logger.get('analytics:Messages');
@@ -9,8 +9,7 @@ const logger = Logger.get('analytics:Messages');
 const FLUSH_WAIT = 100;
 
 export default class Messages {
-
-	constructor (key, storage) {
+	constructor(key, storage) {
 		Object.defineProperties(this, {
 			...defineProtected({
 				stack: [],
@@ -18,32 +17,28 @@ export default class Messages {
 				key: `${key}-pending-analytic-events`,
 				storage,
 				suspended: false,
-				service: null
-			})
+				service: null,
+			}),
 		});
 	}
 
-
-	suspend () {
+	suspend() {
 		updateValue(this, 'suspended', true);
 	}
 
-
-	resume () {
+	resume() {
 		updateValue(this, 'suspended', false);
 
 		this.flushMessages();
 	}
 
-
-	setService (service) {
+	setService(service) {
 		updateValue(this, 'service', service);
 
 		this.flushMessages();
 	}
 
-
-	send (message) {
+	send(message) {
 		this.stack.push(message);
 
 		if (!this.flushTimeout) {
@@ -54,21 +49,22 @@ export default class Messages {
 		}
 	}
 
-
-	getDataForBatch () {
+	getDataForBatch() {
 		return [...this.stack, ...this.getPending()];
 	}
 
-	clear () {
+	clear() {
 		this.setPending([]);
 		updateValue(this, 'stack', []);
 	}
 
-	async flushMessages () {
+	async flushMessages() {
 		const data = this.getDataForBatch();
 
 		//if there's no data, no need to send (also skip if busy)
-		if (!data.length || this.busy) { return; }
+		if (!data.length || this.busy) {
+			return;
+		}
 
 		//clear all pending, since we are fixing to try to send them
 		this.clear();
@@ -85,7 +81,12 @@ export default class Messages {
 
 			Hooks.triggerAfterBatchEvents(data);
 		} catch (e) {
-			logger.error('Failed to send analytic batch_event.\nError:', e, '\nData:', data);
+			logger.error(
+				'Failed to send analytic batch_event.\nError:',
+				e,
+				'\nData:',
+				data
+			);
 
 			//if we failed because of no network connection
 			//add the events to the storage to try again later
@@ -97,8 +98,7 @@ export default class Messages {
 		}
 	}
 
-
-	setPending (pending) {
+	setPending(pending) {
 		if (this.storage) {
 			this.storage.setItem(this.key, JSON.stringify(pending));
 		} else {
@@ -106,8 +106,10 @@ export default class Messages {
 		}
 	}
 
-	getPending () {
-		if (!this.storage) { return this.pending; }
+	getPending() {
+		if (!this.storage) {
+			return this.pending;
+		}
 
 		const { key, storage } = this;
 
@@ -117,7 +119,9 @@ export default class Messages {
 
 			const pending = stored ? JSON.parse(stored) : [];
 
-			if (!Array.isArray(pending)) { throw new Error('Invalid analytic messages stored.'); }
+			if (!Array.isArray(pending)) {
+				throw new Error('Invalid analytic messages stored.');
+			}
 
 			return pending;
 		} catch (e) {

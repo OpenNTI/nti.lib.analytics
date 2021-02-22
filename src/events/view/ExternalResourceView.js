@@ -1,5 +1,5 @@
 import Base from '../abstract/Base';
-import {register} from '../Registry';
+import { register } from '../Registry';
 
 class ExternalResourceView extends Base {
 	static EventType = 'application/vnd.nextthought.analytics.resourceevent';

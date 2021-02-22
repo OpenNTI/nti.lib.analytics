@@ -1,12 +1,11 @@
 /* eslint-env jest */
-import {Date as DateUtil} from '@nti/lib-commons';
+import { Date as DateUtil } from '@nti/lib-commons';
 
 import Event from '../VideoSpeedChange';
 
 const now = new Date('Dec 05 2017 12:00:00 GMT-0600 (CST)');
 
 describe('VideoWatch Event', () => {
-
 	afterEach(() => {
 		DateUtil.MockDate.uninstall();
 	});
@@ -24,7 +23,6 @@ describe('VideoWatch Event', () => {
 	});
 
 	test('Verify data shape', () => {
-
 		const event = new Event(Event.EventType, 'id', {
 			user: 'foobar',
 			rootContextId: '1:2:3',
@@ -35,17 +33,16 @@ describe('VideoWatch Event', () => {
 		});
 
 		expect(event.getData()).toEqual({
-			'MimeType': 'application/vnd.nextthought.analytics.videoplayspeedchange',
-			'NewPlaySpeed': 2,
-			'OldPlaySpeed': 1,
-			'ResourceId': 'id',
-			'RootContextID': '1:2:3',
-			'VideoTime': 50,
-			'context_path': [],
-			'timestamp': now.getTime() / 1000,
-			'user': 'foobar',
+			MimeType:
+				'application/vnd.nextthought.analytics.videoplayspeedchange',
+			NewPlaySpeed: 2,
+			OldPlaySpeed: 1,
+			ResourceId: 'id',
+			RootContextID: '1:2:3',
+			VideoTime: 50,
+			context_path: [],
+			timestamp: now.getTime() / 1000,
+			user: 'foobar',
 		});
-
 	});
-
 });

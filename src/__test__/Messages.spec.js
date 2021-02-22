@@ -1,20 +1,20 @@
 /* eslint-env jest */
-import {updateValue} from '@nti/lib-commons';
+import { updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
 import Messages from '../Messages';
 import Hooks from '../Hooks';
 
-import {mockService, BATCH_EVENT} from './Api.spec';
+import { mockService, BATCH_EVENT } from './Api.spec';
 
 const logger = Logger.get('analytics:Messages');
 const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
-function mockStorage (items = {}) {
+function mockStorage(items = {}) {
 	const storage = {
 		setItem: () => {},
-		getItem: (name) => items[name],
-		removeItem: (name) => delete items[name]
+		getItem: name => items[name],
+		removeItem: name => delete items[name],
 	};
 
 	jest.spyOn(storage, 'setItem');
@@ -23,10 +23,7 @@ function mockStorage (items = {}) {
 	return storage;
 }
 
-
-
 describe('Analytic Messages Test', () => {
-
 	beforeEach(() => {
 		stub(logger, 'debug');
 		stub(logger, 'error');
@@ -41,11 +38,11 @@ describe('Analytic Messages Test', () => {
 		test('sending one starts the timer, and pushes message', () => {
 			const messages = new Messages();
 
-			messages.send({id: 1});
+			messages.send({ id: 1 });
 
 			expect(setTimeout.mock.calls.length).toEqual(1);
 
-			const {stack} = messages;
+			const { stack } = messages;
 
 			expect(stack.length).toEqual(1);
 			expect(stack[0].id).toEqual(1);
@@ -54,12 +51,12 @@ describe('Analytic Messages Test', () => {
 		test('sending two does not restart the timer, and pushes both', () => {
 			const messages = new Messages();
 
-			messages.send({id: 1});
-			messages.send({id: 2});
+			messages.send({ id: 1 });
+			messages.send({ id: 2 });
 
 			expect(setTimeout.mock.calls.length).toEqual(1);
 
-			const {stack} = messages;
+			const { stack } = messages;
 
 			expect(stack.length).toEqual(2);
 			expect(stack[0].id).toEqual(1);
@@ -71,7 +68,7 @@ describe('Analytic Messages Test', () => {
 
 			jest.spyOn(messages, 'flushMessages');
 
-			messages.send({id: 1});
+			messages.send({ id: 1 });
 
 			jest.runAllTimers();
 
@@ -81,11 +78,13 @@ describe('Analytic Messages Test', () => {
 	});
 
 	describe('getDataForStack', () => {
-		function doTest (stack, pending) {
+		function doTest(stack, pending) {
 			const messages = new Messages('key');
 
 			updateValue(messages, 'stack', stack);
-			jest.spyOn(messages, 'getPending').mockImplementation(() => pending);
+			jest.spyOn(messages, 'getPending').mockImplementation(
+				() => pending
+			);
 
 			const data = messages.getDataForBatch();
 
@@ -97,15 +96,15 @@ describe('Analytic Messages Test', () => {
 		}
 
 		test('gets stack only if there is no pending', () => {
-			doTest([{id: 1}], []);
+			doTest([{ id: 1 }], []);
 		});
 
 		test('gets pending only if there is no stack', () => {
-			doTest([], [{id: 1}]);
+			doTest([], [{ id: 1 }]);
 		});
 
 		test('gets stack and pending if there are both', () => {
-			doTest([{id: 1}], [{id: 2}]);
+			doTest([{ id: 1 }], [{ id: 2 }]);
 		});
 	});
 
@@ -133,7 +132,7 @@ describe('Analytic Messages Test', () => {
 	test('clear', () => {
 		const messages = new Messages('key');
 
-		updateValue(messages, 'stack', [{id: 1}]);
+		updateValue(messages, 'stack', [{ id: 1 }]);
 		jest.spyOn(messages, 'setPending').mockImplementation(() => {});
 
 		messages.clear();
@@ -148,7 +147,7 @@ describe('Analytic Messages Test', () => {
 
 			jest.spyOn(messages, 'clear');
 
-			messages.stack.push({id: 1});
+			messages.stack.push({ id: 1 });
 
 			messages.flushMessages();
 
@@ -158,11 +157,13 @@ describe('Analytic Messages Test', () => {
 		test('No Service sets data as pending', () => {
 			const messages = new Messages('key');
 
-			messages.stack.push({id: 'stack'});
+			messages.stack.push({ id: 'stack' });
 
 			jest.spyOn(messages, 'clear').mockImplementation(() => {});
 			jest.spyOn(messages, 'setPending');
-			jest.spyOn(messages, 'getPending').mockImplementation(() => [{id: 'pending'}]);
+			jest.spyOn(messages, 'getPending').mockImplementation(() => [
+				{ id: 'pending' },
+			]);
 
 			messages.flushMessages();
 
@@ -189,11 +190,13 @@ describe('Analytic Messages Test', () => {
 			updateValue(messages, 'service', mockService());
 			messages.suspend();
 
-			messages.stack.push({id: 'stack'});
+			messages.stack.push({ id: 'stack' });
 
 			jest.spyOn(messages, 'clear').mockImplementation(() => {});
 			jest.spyOn(messages, 'setPending');
-			jest.spyOn(messages, 'getPending').mockImplementation(() => [{id: 'pending'}]);
+			jest.spyOn(messages, 'getPending').mockImplementation(() => [
+				{ id: 'pending' },
+			]);
 
 			messages.flushMessages();
 
@@ -220,12 +223,18 @@ describe('Analytic Messages Test', () => {
 
 			messages.setService(service);
 
-			updateValue(messages, 'stack', [{id: 'stack1'}, {id: 'stack2'}]);
-			jest.spyOn(messages, 'getPending').mockImplementation(() => [{id: 'pending1'}, {id: 'pending2'}]);
+			updateValue(messages, 'stack', [
+				{ id: 'stack1' },
+				{ id: 'stack2' },
+			]);
+			jest.spyOn(messages, 'getPending').mockImplementation(() => [
+				{ id: 'pending1' },
+				{ id: 'pending2' },
+			]);
 
 			await messages.flushMessages();
 
-			const {calls} = service.post.mock;
+			const { calls } = service.post.mock;
 
 			expect(calls.length).toEqual(1);
 
@@ -234,9 +243,10 @@ describe('Analytic Messages Test', () => {
 
 			expect(call[0]).toEqual(BATCH_EVENT);
 
-			expect(data.MimeType).toEqual('application/vnd.nextthought.analytics.batchevents');
+			expect(data.MimeType).toEqual(
+				'application/vnd.nextthought.analytics.batchevents'
+			);
 			expect(data.events.length).toEqual(4);
-
 
 			const seen = {};
 
@@ -250,11 +260,10 @@ describe('Analytic Messages Test', () => {
 			expect(seen['pending2']).toBeTruthy();
 		});
 
-
 		test('Triggers after batch events with the events that were sent', async () => {
 			const messages = new Messages('key');
 			const service = mockService();
-			const items = [{id: 'stack1'}, {id: 'stack2'}];
+			const items = [{ id: 'stack1' }, { id: 'stack2' }];
 
 			jest.spyOn(Hooks, 'triggerAfterBatchEvents');
 
@@ -263,13 +272,12 @@ describe('Analytic Messages Test', () => {
 
 			await messages.flushMessages();
 
-			const {calls} = Hooks.triggerAfterBatchEvents.mock;
+			const { calls } = Hooks.triggerAfterBatchEvents.mock;
 
 			expect(calls.length).toEqual(1);
 
 			expect(calls[0][0]).toEqual(items);
 		});
-
 
 		test('If the post fails with no connection the data is added to the pending', async () => {
 			const messages = new Messages('key');
@@ -277,8 +285,14 @@ describe('Analytic Messages Test', () => {
 
 			messages.setService(service);
 
-			updateValue(messages, 'stack', [{id: 'stack1'}, {id: 'stack2'}]);
-			jest.spyOn(messages, 'getPending').mockImplementation(() => [{id: 'pending1'}, {id: 'pending2'}]);
+			updateValue(messages, 'stack', [
+				{ id: 'stack1' },
+				{ id: 'stack2' },
+			]);
+			jest.spyOn(messages, 'getPending').mockImplementation(() => [
+				{ id: 'pending1' },
+				{ id: 'pending2' },
+			]);
 			jest.spyOn(messages, 'setPending');
 			//Mock clear so it doesn't call setPending
 			jest.spyOn(messages, 'clear').mockImplementation(() => {});
@@ -288,7 +302,7 @@ describe('Analytic Messages Test', () => {
 			//Test that it actually tries to call the service
 			expect(service.post.mock.calls.length).toEqual(1);
 
-			const {calls} = messages.setPending.mock;
+			const { calls } = messages.setPending.mock;
 
 			expect(calls.length).toEqual(1);
 
@@ -313,8 +327,10 @@ describe('Analytic Messages Test', () => {
 
 			messages.setService(service);
 
-			updateValue(messages, 'stack', [{id: 'stack1'}]);
-			jest.spyOn(messages, 'getPending').mockImplementation(() => [{id: 'pending1'}]);
+			updateValue(messages, 'stack', [{ id: 'stack1' }]);
+			jest.spyOn(messages, 'getPending').mockImplementation(() => [
+				{ id: 'pending1' },
+			]);
 			jest.spyOn(messages, 'setPending');
 			//Mock clear so it doesn't call set pending
 			jest.spyOn(messages, 'clear').mockImplementation(() => {});
@@ -329,11 +345,11 @@ describe('Analytic Messages Test', () => {
 		test('When give a storage it calls setItem on it', () => {
 			const storage = mockStorage();
 			const messages = new Messages('key', storage);
-			const pending = [{id: 'pending1'}, {id: 'pending2'}];
+			const pending = [{ id: 'pending1' }, { id: 'pending2' }];
 
 			messages.setPending(pending);
 
-			const {calls} = storage.setItem.mock;
+			const { calls } = storage.setItem.mock;
 
 			expect(calls.length).toEqual(1);
 
@@ -357,7 +373,7 @@ describe('Analytic Messages Test', () => {
 
 		test('Without storage sets the items to the pending property', () => {
 			const messages = new Messages('key');
-			const pending = [{id: 'pending1'}, {id: 'pending2'}];
+			const pending = [{ id: 'pending1' }, { id: 'pending2' }];
 
 			messages.setPending(pending);
 
@@ -367,13 +383,17 @@ describe('Analytic Messages Test', () => {
 
 	describe('getPending', () => {
 		test('When given storage calls getItem and JSON.parses it', () => {
-			const data = [{id: 'pending1'}, {id: 'pending2'}];
-			const storage = mockStorage({'key-pending-analytic-events': JSON.stringify(data)});
+			const data = [{ id: 'pending1' }, { id: 'pending2' }];
+			const storage = mockStorage({
+				'key-pending-analytic-events': JSON.stringify(data),
+			});
 			const messages = new Messages('key', storage);
 
 			const pending = messages.getPending();
 
-			expect(storage.getItem).toHaveBeenCalledWith('key-pending-analytic-events');
+			expect(storage.getItem).toHaveBeenCalledWith(
+				'key-pending-analytic-events'
+			);
 			expect(pending.length).toEqual(2);
 
 			const seen = {};

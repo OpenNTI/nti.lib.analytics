@@ -1,15 +1,16 @@
 import Timed from '../abstract/Timed';
-import {register} from '../Registry';
+import { register } from '../Registry';
 
 class ProfileMembershipView extends Timed {
-	static EventType = 'application/vnd.nextthought.analytics.profilemembershipviewevent'
+	static EventType =
+		'application/vnd.nextthought.analytics.profilemembershipviewevent';
 
-	getData () {
+	getData() {
 		const data = super.getData();
 
 		return {
 			...data,
-			ProfileEntity: this.resourceId
+			ProfileEntity: this.resourceId,
 		};
 	}
 }

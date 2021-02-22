@@ -1,4 +1,4 @@
-import {Registry} from './Registry';
+import { Registry } from './Registry';
 
 import './view/AssessmentView';
 import './view/AssignmentView';
@@ -17,7 +17,6 @@ import './video/VideoSkip';
 import './video/VideoWatch';
 import './video/VideoSpeedChange';
 
-
-export function getEventsForManager (manager) {
+export function getEventsForManager(manager) {
 	return Registry.getEventsForManager(manager);
 }

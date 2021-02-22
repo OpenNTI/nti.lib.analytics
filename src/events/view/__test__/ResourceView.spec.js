@@ -1,12 +1,11 @@
 /* eslint-env jest */
-import {Date as DateUtil} from '@nti/lib-commons';
+import { Date as DateUtil } from '@nti/lib-commons';
 
 import Event from '../ResourceView';
 
 const now = new Date('Dec 05 2017 12:00:00 GMT-0600 (CST)');
 
 describe('ResourceView Event', () => {
-
 	afterEach(() => {
 		DateUtil.MockDate.uninstall();
 	});
@@ -26,21 +25,19 @@ describe('ResourceView Event', () => {
 	});
 
 	test('Verify data shape', () => {
-
 		const event = new Event(Event.EventType, 'id', {
 			user: 'foobar',
 			context: ['1:2:3'],
 		});
 
 		expect(event.getData()).toEqual({
-			'MimeType': 'application/vnd.nextthought.analytics.resourceevent',
-			'ResourceId': 'id',
-			'RootContextID': '1:2:3',
-			'context_path': ['1:2:3'],
-			'Duration': 0,
-			'timestamp': now.getTime() / 1000,
-			'user': 'foobar',
+			MimeType: 'application/vnd.nextthought.analytics.resourceevent',
+			ResourceId: 'id',
+			RootContextID: '1:2:3',
+			context_path: ['1:2:3'],
+			Duration: 0,
+			timestamp: now.getTime() / 1000,
+			user: 'foobar',
 		});
 	});
-
 });

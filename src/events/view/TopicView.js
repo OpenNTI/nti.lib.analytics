@@ -1,15 +1,15 @@
 import Timed from '../abstract/Timed';
-import {register} from '../Registry';
+import { register } from '../Registry';
 
 class TopicView extends Timed {
-	static EventType = 'application/vnd.nextthought.analytics.topicviewevent'
+	static EventType = 'application/vnd.nextthought.analytics.topicviewevent';
 
-	getData () {
+	getData() {
 		const data = super.getData();
 
 		return {
 			...data,
-			'topic_id': this.resourceId
+			topic_id: this.resourceId,
 		};
 	}
 }

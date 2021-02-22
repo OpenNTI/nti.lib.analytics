@@ -1,13 +1,13 @@
 /* eslint-env jest */
-import {updateValue, Date as DateUtils} from '@nti/lib-commons';
+import { updateValue, Date as DateUtils } from '@nti/lib-commons';
 
 import Manager from '../Manager';
 
-import {mockService, BEGIN_SESSION, END_SESSION} from './Api.spec';
+import { mockService, BEGIN_SESSION, END_SESSION } from './Api.spec';
 
-const {MockDate} = DateUtils;
+const { MockDate } = DateUtils;
 
-function mockEvent (data, finished, shouldUpdate) {
+function mockEvent(data, finished, shouldUpdate) {
 	const event = {
 		onDataSent: () => {},
 		getData: () => data,
@@ -16,7 +16,7 @@ function mockEvent (data, finished, shouldUpdate) {
 		suspend: () => {},
 		resume: () => {},
 		sleep: () => {},
-		wakeUp: () => {}
+		wakeUp: () => {},
 	};
 
 	jest.spyOn(event, 'onDataSent');
@@ -29,7 +29,7 @@ function mockEvent (data, finished, shouldUpdate) {
 	return event;
 }
 
-function getManager (name) {
+function getManager(name) {
 	const manager = new Manager(name);
 	const service = mockService();
 
@@ -38,12 +38,12 @@ function getManager (name) {
 	updateValue(manager, 'messages', {
 		send: () => {},
 		suspend: () => {},
-		resume: () => {}
+		resume: () => {},
 	});
 
 	updateValue(manager, 'heartbeat', {
 		start: () => {},
-		stop: () => {}
+		stop: () => {},
 	});
 
 	jest.spyOn(manager.messages, 'send');
@@ -60,7 +60,7 @@ describe('Analytics Manager Test', () => {
 	describe('Exposes All Events', () => {
 		const manager = new Manager('test');
 
-		function timedEventExists (event) {
+		function timedEventExists(event) {
 			expect(event).toBeTruthy();
 			expect(event.start).toBeTruthy();
 			expect(event.stop).toBeTruthy();
@@ -133,13 +133,12 @@ describe('Analytics Manager Test', () => {
 
 	test('setContext updates the context', () => {
 		const manager = new Manager('set-context');
-		const context = [{id: 1}];
+		const context = [{ id: 1 }];
 
 		manager.setContext(context);
 
 		expect(manager.context).toEqual(context);
 	});
-
 
 	test('setUser updates the user', () => {
 		const manager = new Manager('set-user');
@@ -154,7 +153,11 @@ describe('Analytics Manager Test', () => {
 		test('returns event that matches predicate', () => {
 			const manager = new Manager('find-returns-match');
 
-			updateValue(manager, 'activeEvents', [{id: 1}, {id: 2}, {id: 3}]);
+			updateValue(manager, 'activeEvents', [
+				{ id: 1 },
+				{ id: 2 },
+				{ id: 3 },
+			]);
 
 			const match = manager.findActiveEvent(e => e.id === 2);
 
@@ -164,7 +167,11 @@ describe('Analytics Manager Test', () => {
 		test('returns null if nothing matches', () => {
 			const manager = new Manager('find-returns-null');
 
-			updateValue(manager, 'activeEvents', [{id: 1}, {id: 2}, {id: 3}]);
+			updateValue(manager, 'activeEvents', [
+				{ id: 1 },
+				{ id: 2 },
+				{ id: 3 },
+			]);
 
 			const match = manager.findActiveEvent(() => false);
 
@@ -175,7 +182,7 @@ describe('Analytics Manager Test', () => {
 	describe('pushEvent', () => {
 		test('immediate finished events, call send and do not start the heartbeat', () => {
 			const manager = getManager('immediate-finished-event');
-			const data = {test: 'a'};
+			const data = { test: 'a' };
 			const event = mockEvent(data, true);
 
 			manager.pushEvent(event, true);
@@ -186,10 +193,9 @@ describe('Analytics Manager Test', () => {
 			expect(manager.activeEvents.length).toEqual(0);
 		});
 
-
 		test('immediate not finished events; push to active, call send, and do call start', () => {
 			const manager = getManager('immediate-not-finished-events');
-			const data = {test: 'b'};
+			const data = { test: 'b' };
 			const event = mockEvent(data, false);
 
 			manager.pushEvent(event, true);
@@ -203,7 +209,7 @@ describe('Analytics Manager Test', () => {
 
 		test('not immediate not finished events; push to active, do not call send, and do call start', () => {
 			const manager = getManager('not-immediate-not-finished-events');
-			const data = {test: 'c'};
+			const data = { test: 'c' };
 			const event = mockEvent(data, false);
 
 			manager.pushEvent(event, false);
@@ -233,7 +239,7 @@ describe('Analytics Manager Test', () => {
 	describe('onHeartBeat', () => {
 		test('no updates all finished, clears the active events', () => {
 			const manager = getManager('heartbeat-no-updates-all-finished');
-			const data = {test: 'a'};
+			const data = { test: 'a' };
 			const event = mockEvent(data, true, false);
 
 			updateValue(manager, 'activeEvents', [event]);
@@ -247,7 +253,7 @@ describe('Analytics Manager Test', () => {
 
 		test('updates and all finished, clears the active and sends messages', () => {
 			const manager = getManager('heartbeat-updates-all-finished');
-			const data = {test: 'b'};
+			const data = { test: 'b' };
 			const event = mockEvent(data, true, true);
 
 			updateValue(manager, 'activeEvents', [event]);
@@ -262,7 +268,7 @@ describe('Analytics Manager Test', () => {
 
 		test('updates and not finished, keeps the active and sends the messages', () => {
 			const manager = getManager('heartbeat-update-not-finished');
-			const data = {test: 'c'};
+			const data = { test: 'c' };
 			const event = mockEvent(data, false, true);
 
 			updateValue(manager, 'activeEvents', [event]);
@@ -276,9 +282,9 @@ describe('Analytics Manager Test', () => {
 			expect(manager.activeEvents[0]).toEqual(event);
 		});
 
-		test('passing force, sends the active events even if they aren\'t marked for update', () => {
+		test("passing force, sends the active events even if they aren't marked for update", () => {
 			const manager = getManager('heartbeat-update-force');
-			const data = {test: 'b'};
+			const data = { test: 'b' };
 			const event = mockEvent(data, false, false);
 
 			updateValue(manager, 'activeEvents', [event]);
@@ -294,15 +300,15 @@ describe('Analytics Manager Test', () => {
 
 		test('If heartbeats are too far apart, sleep active events and wake them up', () => {
 			const dates = {
-				'start': 'December 1, 2019 12:00:00',
-				'sleep': 'December 1, 2019 1:00:00',
-				'wake': 'December 8, 2019 12:00:00'
+				start: 'December 1, 2019 12:00:00',
+				sleep: 'December 1, 2019 1:00:00',
+				wake: 'December 8, 2019 12:00:00',
 			};
 
 			MockDate.install(dates.start);
 
 			const manager = getManager('sleep-wake');
-			const data = {test: 'b'};
+			const data = { test: 'b' };
 			const event = mockEvent(data, false, true);
 
 			updateValue(manager, 'activeEvents', [event]);
@@ -411,7 +417,10 @@ describe('Analytics Manager Test', () => {
 			manager.setService(service);
 			manager.beginSession();
 
-			expect(service.post).toHaveBeenCalledWith(BEGIN_SESSION, expect.anything());
+			expect(service.post).toHaveBeenCalledWith(
+				BEGIN_SESSION,
+				expect.anything()
+			);
 		});
 
 		test('Does nothing if the manager is disabled', () => {
@@ -439,7 +448,10 @@ describe('Analytics Manager Test', () => {
 			manager.setService(service);
 			manager.endSession();
 
-			expect(service.post).toHaveBeenCalledWith(END_SESSION, expect.anything());
+			expect(service.post).toHaveBeenCalledWith(
+				END_SESSION,
+				expect.anything()
+			);
 		});
 
 		test('Does nothing if the manager is disabled', () => {

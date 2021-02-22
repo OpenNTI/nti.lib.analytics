@@ -1,18 +1,16 @@
 import EventEmitter from 'events';
 
-import {defineProtected, definePublic, updateValue} from '@nti/lib-commons';
+import { defineProtected, definePublic, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
-
 
 import {
 	isAnalyticsEnabled,
 	beginAnalyticsSession,
-	endAnalyticsSession
+	endAnalyticsSession,
 } from './Api';
-import {getEventsForManager} from './events/';
-import {Interval, toAnalyticsPath} from './utils';
+import { getEventsForManager } from './events/';
+import { Interval, toAnalyticsPath } from './utils';
 import Messages from './Messages';
-
 
 const logger = Logger.get('analytics:Manager');
 
@@ -22,16 +20,21 @@ const SLEEP_TIMEOUT = HEARTBEAT * 2;
 const registeredNames = {};
 
 export default class AnalyticsManager extends EventEmitter {
-	constructor (name, storage, service, heartbeatDelay = HEARTBEAT) {
+	constructor(name, storage, service, heartbeatDelay = HEARTBEAT) {
 		super();
 
-		if (registeredNames[name]) { throw new Error('Registering duplicate AnalyticsManager name'); }
+		if (registeredNames[name]) {
+			throw new Error('Registering duplicate AnalyticsManager name');
+		}
 
 		registeredNames[name] = true;
 
 		Object.defineProperties(this, {
 			...defineProtected({
-				heartbeat: new Interval(() => this.onHeartBeat(), heartbeatDelay),
+				heartbeat: new Interval(
+					() => this.onHeartBeat(),
+					heartbeatDelay
+				),
 				messages: new Messages(name, storage),
 
 				//Events that have started but not finished yet
@@ -40,12 +43,10 @@ export default class AnalyticsManager extends EventEmitter {
 				disabled: false,
 				suspended: false,
 				context: null,
-				user: null
+				user: null,
 			}),
 
-			...definePublic(
-				getEventsForManager(this)
-			)
+			...definePublic(getEventsForManager(this)),
 		});
 
 		if (service) {
@@ -53,11 +54,9 @@ export default class AnalyticsManager extends EventEmitter {
 		}
 	}
 
+	toAnalyticsPath = toAnalyticsPath;
 
-	toAnalyticsPath = toAnalyticsPath
-
-
-	setService (service) {
+	setService(service) {
 		logger.debug('Applying Service document...');
 		if (isAnalyticsEnabled(service)) {
 			this.messages.setService(service);
@@ -65,48 +64,55 @@ export default class AnalyticsManager extends EventEmitter {
 			Object.defineProperties(this, {
 				...defineProtected({
 					onBeginSession: () => beginAnalyticsSession(service),
-					onEndSession: () => endAnalyticsSession(service)
-				})
+					onEndSession: () => endAnalyticsSession(service),
+				}),
 			});
-
 		} else {
 			logger.debug('Analytics are disabled.');
 			updateValue(this, 'disabled', true);
 		}
 	}
 
-
-	setContext (context) {
+	setContext(context) {
 		updateValue(this, 'context', context);
 	}
 
-
-	setUser (user) {
+	setUser(user) {
 		updateValue(this, 'user', user);
 	}
 
-
-	findActiveEvent (predicate) {
+	findActiveEvent(predicate) {
 		return this.activeEvents.find(predicate) || null;
 	}
 
-
-	pushEvent (event, immediate) {
+	pushEvent(event, immediate) {
 		//if we are disabled, there's no point in doing anything
-		if (this.disabled) { return; }
+		if (this.disabled) {
+			return;
+		}
 
 		logger.debug('[pushEvent] Event: %o (immediate: %s)', event, immediate);
 		if (immediate) {
-			logger.debug('[pushEvent] Sending Event: %o (because: immediate: %s)', event, immediate);
+			logger.debug(
+				'[pushEvent] Sending Event: %o (because: immediate: %s)',
+				event,
+				immediate
+			);
 			sendEvent(this.messages, event);
 		}
 
 		if (!event.isFinished()) {
-			logger.debug('[pushEvent] Event is not finished: %o, adding to activeEvents.', event);
+			logger.debug(
+				'[pushEvent] Event is not finished: %o, adding to activeEvents.',
+				event
+			);
 			this.activeEvents.push(event);
 
 			if (!this.suspended) {
-				logger.debug('[pushEvent] Event is not suspended, starting heartbeat: %o', event);
+				logger.debug(
+					'[pushEvent] Event is not suspended, starting heartbeat: %o',
+					event
+				);
 				this.heartbeat.start();
 			} else {
 				logger.debug('[pushEvent] Event is suspended: %o', event);
@@ -116,14 +122,12 @@ export default class AnalyticsManager extends EventEmitter {
 		}
 	}
 
-
-	stopHeartBeat () {
+	stopHeartBeat() {
 		this.heartbeat.stop();
 		this.lastHeartBeat = null;
 	}
 
-
-	onHeartBeat (forceUpdate) {
+	onHeartBeat(forceUpdate) {
 		const remaining = [];
 
 		if (this.disabled) {
@@ -135,7 +139,7 @@ export default class AnalyticsManager extends EventEmitter {
 
 		this.lastHeartBeat = now;
 
-		const diff = lastHeartBeat ? (now - lastHeartBeat) : 0;
+		const diff = lastHeartBeat ? now - lastHeartBeat : 0;
 		const wasSleeping = diff > SLEEP_TIMEOUT;
 
 		if (wasSleeping) {
@@ -150,7 +154,12 @@ export default class AnalyticsManager extends EventEmitter {
 			eventHeartBeat(event);
 
 			if (event.shouldUpdate() || forceUpdate) {
-				logger.debug('[onHeartBeat] Sending Event: %o (because: shouldUpdate: %s, force: %s)', event, event.shouldUpdate(), forceUpdate);
+				logger.debug(
+					'[onHeartBeat] Sending Event: %o (because: shouldUpdate: %s, force: %s)',
+					event,
+					event.shouldUpdate(),
+					forceUpdate
+				);
 				sendEvent(this.messages, event, now);
 			}
 
@@ -175,10 +184,11 @@ export default class AnalyticsManager extends EventEmitter {
 		}
 	}
 
-
-	suspendEvents () {
+	suspendEvents() {
 		//if we already are suspended, there's nothing to do.
-		if (this.suspended || this.disabled) { return; }
+		if (this.suspended || this.disabled) {
+			return;
+		}
 
 		logger.debug('Suspending Analytics Manager & events...');
 
@@ -195,10 +205,11 @@ export default class AnalyticsManager extends EventEmitter {
 		}
 	}
 
-
-	resumeEvents () {
+	resumeEvents() {
 		//if we aren't suspended there's nothing to do.
-		if (!this.suspended || this.disabled) { return; }
+		if (!this.suspended || this.disabled) {
+			return;
+		}
 
 		logger.debug('Resuming Analytics Manager & events...');
 		updateValue(this, 'suspended', false);
@@ -215,51 +226,69 @@ export default class AnalyticsManager extends EventEmitter {
 		this.onHeartBeat(true);
 	}
 
+	beginSession() {
+		if (this.disabled) {
+			return;
+		}
 
-	beginSession () {
-		if (this.disabled) { return; }
-
-		if (!this.onBeginSession) { throw new Error('Starting a session before the service has been set'); }
+		if (!this.onBeginSession) {
+			throw new Error(
+				'Starting a session before the service has been set'
+			);
+		}
 
 		logger.debug('Beginning Analytics Session...');
 		this.onBeginSession();
 	}
 
+	endSession() {
+		if (this.disabled) {
+			return;
+		}
 
-	endSession () {
-		if (this.disabled) { return; }
-
-		if (!this.onEndSession) { throw new Error('Stopping a session before the service has been set'); }
+		if (!this.onEndSession) {
+			throw new Error(
+				'Stopping a session before the service has been set'
+			);
+		}
 
 		logger.debug('Ending Analytics Session...');
 		this.onEndSession();
 	}
-
-
 }
 
-function sendEvent (messages, event, now) {
+function sendEvent(messages, event, now) {
 	messages.send(event.getData(now));
 	event.onDataSent();
 }
 
-function eventHeartBeat (event) {
-	if (event.onHeartBeat) { event.onHeartBeat(); }
+function eventHeartBeat(event) {
+	if (event.onHeartBeat) {
+		event.onHeartBeat();
+	}
 }
 
-function suspendEvent (event, now) {
-	if (event.suspend) { event.suspend(now); }
+function suspendEvent(event, now) {
+	if (event.suspend) {
+		event.suspend(now);
+	}
 }
 
-function resumeEvent (event, now) {
+function resumeEvent(event, now) {
 	/* istanbul ignore else */
-	if (event.resume) { event.resume(now); }
+	if (event.resume) {
+		event.resume(now);
+	}
 }
 
-function sleepEvent (event, sleepTime) {
-	if (event.sleep) { event.sleep(sleepTime); }
+function sleepEvent(event, sleepTime) {
+	if (event.sleep) {
+		event.sleep(sleepTime);
+	}
 }
 
-function wakeUpEvent (event, now) {
-	if (event.wakeUp) { event.wakeUp(now);}
+function wakeUpEvent(event, now) {
+	if (event.wakeUp) {
+		event.wakeUp(now);
+	}
 }

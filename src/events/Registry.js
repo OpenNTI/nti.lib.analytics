@@ -2,26 +2,24 @@ const Instance = Symbol.for('Instance');
 const Events = Symbol('Events');
 
 export class Registry {
-	static getInstance () {
+	static getInstance() {
 		this[Instance] = this[Instance] || new Registry();
 		return this[Instance];
 	}
 
-	static getEventsForManager (manager) {
+	static getEventsForManager(manager) {
 		return this.getInstance().getEventsForManager(manager);
 	}
 
-	static registerEvent (...args) {
+	static registerEvent(...args) {
 		this.getInstance().registerEvent(...args);
 	}
 
-
-	constructor () {
+	constructor() {
 		this[Events] = [];
 	}
 
-
-	getEventFor (name) {
+	getEventFor(name) {
 		for (let event of this[Events]) {
 			if (event.name === name) {
 				return event;
@@ -29,17 +27,17 @@ export class Registry {
 		}
 	}
 
-
-	registerEvent (name, make) {
+	registerEvent(name, make) {
 		const existing = this.getEventFor(name);
 
-		if (existing) { throw new Error('Overriding an existing event.'); }
+		if (existing) {
+			throw new Error('Overriding an existing event.');
+		}
 
-		this[Events].push({name, make});
+		this[Events].push({ name, make });
 	}
 
-
-	getEventsForManager (manager) {
+	getEventsForManager(manager) {
 		return this[Events].reduce((acc, event) => {
 			acc[event.name] = event.make(manager);
 
@@ -48,8 +46,8 @@ export class Registry {
 	}
 }
 
-export function register (name) {
-	const decorator = (event) => {
+export function register(name) {
+	const decorator = event => {
 		Registry.registerEvent(name, (...args) => event.makeFactory(...args));
 	};
 

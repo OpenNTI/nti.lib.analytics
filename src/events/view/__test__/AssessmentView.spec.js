@@ -1,12 +1,11 @@
 /* eslint-env jest */
-import {Date as DateUtil} from '@nti/lib-commons';
+import { Date as DateUtil } from '@nti/lib-commons';
 
 import Event from '../AssessmentView';
 
 const now = new Date('Dec 05 2017 12:00:00 GMT-0600 (CST)');
 
 describe('AssessmentView Event', () => {
-
 	afterEach(() => {
 		DateUtil.MockDate.uninstall();
 	});
@@ -26,23 +25,22 @@ describe('AssessmentView Event', () => {
 	});
 
 	test('Verify data shape', () => {
-
 		const event = new Event(Event.EventType, 'id', {
 			user: 'foobar',
 			context: ['1:2:3'],
-			contentId: 'content-id'
+			contentId: 'content-id',
 		});
 
 		expect(event.getData()).toEqual({
-			'ContentId': 'content-id',
-			'MimeType': 'application/vnd.nextthought.analytics.selfassessmentviewevent',
-			'ResourceId': 'id',
-			'RootContextID': '1:2:3',
-			'context_path': ['1:2:3'],
-			'Duration': 0,
-			'timestamp': now.getTime() / 1000,
-			'user': 'foobar',
+			ContentId: 'content-id',
+			MimeType:
+				'application/vnd.nextthought.analytics.selfassessmentviewevent',
+			ResourceId: 'id',
+			RootContextID: '1:2:3',
+			context_path: ['1:2:3'],
+			Duration: 0,
+			timestamp: now.getTime() / 1000,
+			user: 'foobar',
 		});
 	});
-
 });

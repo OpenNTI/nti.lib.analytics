@@ -1,20 +1,20 @@
 import Base from '../abstract/Base';
-import {register} from '../Registry';
+import { register } from '../Registry';
 
-import {getBaseVideoData} from './VideoWatch';
+import { getBaseVideoData } from './VideoWatch';
 
 class VideoSkip extends Base {
-	static EventType = 'application/vnd.nextthought.analytics.skipvideoevent'
+	static EventType = 'application/vnd.nextthought.analytics.skipvideoevent';
 
-	video = true
+	video = true;
 
-	getData () {
-		const {data} = this;
+	getData() {
+		const { data } = this;
 		const output = super.getData();
 
 		return {
 			...output,
-			...getBaseVideoData(data)
+			...getBaseVideoData(data),
 		};
 	}
 }

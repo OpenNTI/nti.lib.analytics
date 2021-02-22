@@ -6,14 +6,19 @@ import { getError } from '../../utils';
 const logger = Logger.get('analytics:event');
 
 export default class BaseAnalyticEvent {
-	static EventType = ''
-	static Immediate = true
+	static EventType = '';
+	static Immediate = true;
 
-	static findActiveEvent (manager, resourceId) {
-		return manager.findActiveEvent(e => e.type === this.EventType && e.resourceId === resourceId && !e.isFinished());
+	static findActiveEvent(manager, resourceId) {
+		return manager.findActiveEvent(
+			e =>
+				e.type === this.EventType &&
+				e.resourceId === resourceId &&
+				!e.isFinished()
+		);
 	}
 
-	static makeFactory (manager) {
+	static makeFactory(manager) {
 		const Type = this;
 
 		if (!manager) {
@@ -23,22 +28,29 @@ export default class BaseAnalyticEvent {
 		return {
 			send: (resourceId, data) => {
 				try {
-					const event = new Type(this.EventType, resourceId, data || {}, manager);
+					const event = new Type(
+						this.EventType,
+						resourceId,
+						data || {},
+						manager
+					);
 
 					manager.pushEvent(event, this.Immediate);
-
 				} catch (e) {
-					logger.error('Could not send event because: %o', getError(e));
+					logger.error(
+						'Could not send event because: %o',
+						getError(e)
+					);
 				}
-			}
+			},
 		};
 	}
 
-
-	constructor (type, resourceId, data = {}, manager = {}) {
+	constructor(type, resourceId, data = {}, manager = {}) {
 		const context = data.context || manager.context || [];
 
-		const rootContextId = data.rootContextId || data.RootContextID || context[0] || '';
+		const rootContextId =
+			data.rootContextId || data.RootContextID || context[0] || '';
 		const user = data.user || manager.user;
 
 		if (!rootContextId) {
@@ -52,27 +64,25 @@ export default class BaseAnalyticEvent {
 		Object.defineProperties(this, {
 			...defineProtected({
 				context,
-				data: {...data},
+				data: { ...data },
 				manager,
 				resourceId,
 				rootContextId,
 				startTime: new Date(),
 				type,
 				user,
-			})
+			}),
 		});
 	}
 
-
-	updateData (data) {
-		updateValue(this, 'data', {...this.data, ...data});
+	updateData(data) {
+		updateValue(this, 'data', { ...this.data, ...data });
 	}
 
-
-	getData () {
+	getData() {
 		return {
 			MimeType: this.type,
-			'context_path': this.context,
+			context_path: this.context,
 			RootContextID: this.rootContextId,
 			timestamp: this.startTime.getTime() / 1000, //send seconds back
 			user: this.user,
@@ -80,11 +90,11 @@ export default class BaseAnalyticEvent {
 		};
 	}
 
-
-	onDataSent () {
+	onDataSent() {
 		this.dataSent = true;
 	}
 
-
-	isFinished () { return this.dataSent; }
+	isFinished() {
+		return this.dataSent;
+	}
 }

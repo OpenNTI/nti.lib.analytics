@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import '../index';
-import {Registry} from '../Registry';
-
+import { Registry } from '../Registry';
 
 const KNOWN = [
 	'AssessmentView',
@@ -20,9 +19,7 @@ const KNOWN = [
 	'VideoSpeedChange',
 ];
 
-
 test('Validate events are resolvable', () => {
-
 	const registry = Registry.getInstance();
 
 	for (let type of KNOWN) {
@@ -30,5 +27,4 @@ test('Validate events are resolvable', () => {
 
 		expect(a).toBeTruthy();
 	}
-
 });

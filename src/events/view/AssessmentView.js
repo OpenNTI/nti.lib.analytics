@@ -1,17 +1,19 @@
 import Timed from '../abstract/Timed';
-import {register} from '../Registry';
+import { register } from '../Registry';
 
 class AssessmentView extends Timed {
-	static EventType = 'application/vnd.nextthought.analytics.selfassessmentviewevent'
+	static EventType =
+		'application/vnd.nextthought.analytics.selfassessmentviewevent';
 
-	getData () {
+	getData() {
 		const data = super.getData();
 
 		return {
 			...data,
-			ContentId: this.data.contentId ||
+			ContentId:
+				this.data.contentId ||
 				/* istanbul ignore next */
-				this.data.ContentID
+				this.data.ContentID,
 		};
 	}
 }

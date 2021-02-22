@@ -7,12 +7,12 @@ const logger = Logger.get('analytics:event');
 const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
 class TestImmediateEvent extends Base {
-	static EventType = 'test-immediate-event'
+	static EventType = 'test-immediate-event';
 }
 
 class TestNonImmediateEvent extends Base {
 	static EventType = 'test-non-immediate-event';
-	static Immediate = false
+	static Immediate = false;
 }
 
 describe('Base Analytic Event', () => {
@@ -29,17 +29,26 @@ describe('Base Analytic Event', () => {
 		let predicate;
 
 		const manager = {
-			findActiveEvent: (fn) => predicate = fn
+			findActiveEvent: fn => (predicate = fn),
 		};
 
 		TestImmediateEvent.findActiveEvent(manager, resourceId);
 
-		expect(predicate({type: 'not', resourceId: 'not', isFinished})).toBeFalsy();
-		expect(predicate({type: 'test-immediate-event', resourceId: 'not', isFinished})).toBeFalsy();
-		expect(predicate({type: 'not', resourceId, isFinished})).toBeFalsy();
-		expect(predicate({type: 'test-immediate-event', resourceId, isFinished})).toBeTruthy();
+		expect(
+			predicate({ type: 'not', resourceId: 'not', isFinished })
+		).toBeFalsy();
+		expect(
+			predicate({
+				type: 'test-immediate-event',
+				resourceId: 'not',
+				isFinished,
+			})
+		).toBeFalsy();
+		expect(predicate({ type: 'not', resourceId, isFinished })).toBeFalsy();
+		expect(
+			predicate({ type: 'test-immediate-event', resourceId, isFinished })
+		).toBeTruthy();
 	});
-
 
 	describe('makeFactory', () => {
 		test('factory has the send method', () => {
@@ -54,7 +63,7 @@ describe('Base Analytic Event', () => {
 
 		test('Immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
-				pushEvent: jest.fn()
+				pushEvent: jest.fn(),
 			};
 
 			const resourceId = 'testResourceId';
@@ -62,19 +71,29 @@ describe('Base Analytic Event', () => {
 
 			factory.send();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
-			expect(logger.error).toHaveBeenCalledWith('Could not send event because: %o', expect.anything());
+			expect(logger.error).toHaveBeenCalledWith(
+				'Could not send event because: %o',
+				expect.anything()
+			);
 
 			manager.pushEvent.mockClear();
 
-			factory.send('id', {rootContextId: 'foo'});
+			factory.send('id', { rootContextId: 'foo' });
 			expect(manager.pushEvent).not.toHaveBeenCalled();
-			expect(logger.error).toHaveBeenCalledWith('Could not send event because: %o', expect.anything());
+			expect(logger.error).toHaveBeenCalledWith(
+				'Could not send event because: %o',
+				expect.anything()
+			);
 
 			manager.pushEvent.mockClear();
 
-			factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
+			factory.send(resourceId, {
+				id: 'test',
+				rootContextId: '1:2:3',
+				user: 'foobar',
+			});
 
-			const {calls} = manager.pushEvent.mock;
+			const { calls } = manager.pushEvent.mock;
 
 			expect(calls.length).toEqual(1);
 
@@ -89,15 +108,19 @@ describe('Base Analytic Event', () => {
 
 		test('Non-immediate event pushes, with correct resourceId, type, and data', () => {
 			const manager = {
-				pushEvent: jest.fn()
+				pushEvent: jest.fn(),
 			};
 
 			const factory = TestNonImmediateEvent.makeFactory(manager);
 			const resourceId = 'testResourceId';
 
-			factory.send(resourceId, {id: 'test', rootContextId: '1:2:3', user: 'foobar'});
+			factory.send(resourceId, {
+				id: 'test',
+				rootContextId: '1:2:3',
+				user: 'foobar',
+			});
 
-			const {calls} = manager.pushEvent.mock;
+			const { calls } = manager.pushEvent.mock;
 
 			expect(calls.length).toEqual(1);
 
@@ -114,8 +137,13 @@ describe('Base Analytic Event', () => {
 	describe('data', () => {
 		const type = 'test-type';
 		const resourceId = 'test-resource-id';
-		const data = {id: 1, context: ['context'], user: 'user', rootContextId: 'root'};
-		const manager = {context: ['manager-context'], user: 'manager-user'};
+		const data = {
+			id: 1,
+			context: ['context'],
+			user: 'user',
+			rootContextId: 'root',
+		};
+		const manager = { context: ['manager-context'], user: 'manager-user' };
 		const DATE_TO_USE = new Date('2016');
 
 		let oldDate;
@@ -170,20 +198,35 @@ describe('Base Analytic Event', () => {
 		});
 
 		test('gets context from manager if not in data', () => {
-			const localEvent = new Base(type, resourceId, {rootContextId: '1:2:3', user: 'foobar'}, manager);
+			const localEvent = new Base(
+				type,
+				resourceId,
+				{ rootContextId: '1:2:3', user: 'foobar' },
+				manager
+			);
 
 			expect(localEvent.context).toEqual(manager.context);
 		});
 
 		test('context is empty array if none given', () => {
-			const localEvent = new Base(type, resourceId, {rootContextId: '1:2:3', user: 'foobar'}, {});
+			const localEvent = new Base(
+				type,
+				resourceId,
+				{ rootContextId: '1:2:3', user: 'foobar' },
+				{}
+			);
 
 			expect(localEvent.context).toEqual([]);
 		});
 
 		test('sets rootContextId from context if not given one', () => {
 			const context = ['root'];
-			const localEvent = new Base(type, resourceId, {context, user: 'foobar'}, {});
+			const localEvent = new Base(
+				type,
+				resourceId,
+				{ context, user: 'foobar' },
+				{}
+			);
 
 			expect(localEvent.rootContextId).toEqual('root');
 		});
@@ -211,13 +254,19 @@ describe('Base Analytic Event', () => {
 	});
 
 	test('isFinished returns false if onDataSent has not been called', () => {
-		const testEvent = new Base('dummy', 'id', {rootContextId: '1:2:3', user: 'foobar'});
+		const testEvent = new Base('dummy', 'id', {
+			rootContextId: '1:2:3',
+			user: 'foobar',
+		});
 
 		expect(testEvent.isFinished()).toBeFalsy();
 	});
 
 	test('isFinished returns true if onDataSent has been called', () => {
-		const testEvent = new Base('dummy', 'id', {rootContextId: '1:2:3', user: 'foobar'});
+		const testEvent = new Base('dummy', 'id', {
+			rootContextId: '1:2:3',
+			user: 'foobar',
+		});
 
 		testEvent.onDataSent();
 		expect(testEvent.isFinished()).toBeTruthy();
