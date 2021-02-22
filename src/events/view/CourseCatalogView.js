@@ -10,8 +10,7 @@ class CourseCatalogView extends Timed {
 			type,
 			resourceId,
 			{
-				.../* istanbul ignore next */
-				(data || {}),
+				.../* istanbul ignore next */ (data || {}),
 				rootContextId: resourceId,
 			},
 			manager
