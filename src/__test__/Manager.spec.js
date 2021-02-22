@@ -3,7 +3,7 @@ import { updateValue, Date as DateUtils } from '@nti/lib-commons';
 
 import Manager from '../Manager';
 
-import { mockService, BEGIN_SESSION, END_SESSION } from './Api.spec';
+import { mockService, BEGIN_SESSION, END_SESSION } from './util';
 
 const { MockDate } = DateUtils;
 

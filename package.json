@@ -28,6 +28,7 @@
   "dependencies": {
     "@nti/lib-commons": "NextThought/nti.lib.commons",
     "@nti/util-logger": "NextThought/nti.util.logger",
+    "@nti/web-client": "NextThought/nti.web.client",
     "esm": "^3.2.25"
   },
   "devDependencies": {

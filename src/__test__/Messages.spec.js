@@ -5,7 +5,7 @@ import Logger from '@nti/util-logger';
 import Messages from '../Messages';
 import Hooks from '../Hooks';
 
-import { mockService, BATCH_EVENT } from './Api.spec';
+import { mockService, BATCH_EVENT } from './util';
 
 const logger = Logger.get('analytics:Messages');
 const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
