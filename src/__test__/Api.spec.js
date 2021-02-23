@@ -36,20 +36,22 @@ describe('Analytic API', () => {
 			);
 		});
 
-		test('if there is a link, and there is a cookie it resolves without posting', () => {
+		test('if there is a link, and there is a cookie, still posts', () => {
 			const service = mockService(false, true);
 
 			expect(beginAnalyticsSession(service)).resolves.toEqual(
 				expect.anything()
 			);
-			expect(service.post).not.toHaveBeenCalled();
+			expect(service.post).toHaveBeenCalled();
 		});
 
 		test('if there is no link it rejects', () => {
 			const service = mockService(true);
 
-			expect(beginAnalyticsSession(service)).rejects.toEqual(
-				'No link to begin an analytics session'
+			expect(
+				beginAnalyticsSession(service)
+			).rejects.toThrowErrorMatchingInlineSnapshot(
+				`"No Link: analytics_session"`
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});
@@ -71,8 +73,10 @@ describe('Analytic API', () => {
 		test('rejects if not given an end_analytics_session link', () => {
 			const service = mockService(true);
 
-			expect(endAnalyticsSession(service)).rejects.toEqual(
-				'No link to end an analytics session'
+			expect(
+				endAnalyticsSession(service)
+			).rejects.toThrowErrorMatchingInlineSnapshot(
+				`"No Link: end_analytics_session"`
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});
@@ -104,8 +108,10 @@ describe('Analytic API', () => {
 			const service = mockService(true);
 			const data = [{ id: 1 }, { id: 2 }];
 
-			expect(sendBatchEvents(service, data)).rejects.toEqual(
-				'No link to send batch events'
+			expect(
+				sendBatchEvents(service, data)
+			).rejects.toThrowErrorMatchingInlineSnapshot(
+				`"No Link: batch_events"`
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});
