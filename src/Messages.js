@@ -1,3 +1,4 @@
+import { reportError } from '@nti/web-client';
 import { defineProtected, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
@@ -87,6 +88,7 @@ export default class Messages {
 				'\nData:',
 				data
 			);
+			reportError(e);
 
 			//if we failed because of no network connection
 			//add the events to the storage to try again later
@@ -126,6 +128,7 @@ export default class Messages {
 			return pending;
 		} catch (e) {
 			logger.error('Invalid analytic messages stored.\nError:', e);
+			reportError(e);
 			return [];
 		}
 	}

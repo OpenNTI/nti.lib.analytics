@@ -1,3 +1,4 @@
+import { reportError } from '@nti/web-client';
 import { defineProtected, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
@@ -41,6 +42,7 @@ export default class BaseAnalyticEvent {
 						'Could not send event because: %o',
 						getError(e)
 					);
+					reportError(e);
 				}
 			},
 		};

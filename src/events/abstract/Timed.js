@@ -1,3 +1,4 @@
+import { reportError } from '@nti/web-client';
 import { defineProtected, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
@@ -43,6 +44,7 @@ export default class TimedAnalyticEvent extends Base {
 						resourceId,
 						getError(e)
 					);
+					reportError(e);
 				}
 			},
 
@@ -67,6 +69,7 @@ export default class TimedAnalyticEvent extends Base {
 						resourceId,
 						getError(e)
 					);
+					reportError(e);
 				}
 			},
 
@@ -91,6 +94,7 @@ export default class TimedAnalyticEvent extends Base {
 						resourceId,
 						getError(e)
 					);
+					reportError(e);
 				}
 			},
 		};
