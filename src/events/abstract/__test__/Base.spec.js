@@ -69,7 +69,7 @@ describe('Base Analytic Event', () => {
 			const resourceId = 'testResourceId';
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			factory.send();
+			expect(() => factory.send()).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
 			expect(logger.error).toHaveBeenCalledWith(
 				'Could not send event because: %o',
@@ -78,7 +78,9 @@ describe('Base Analytic Event', () => {
 
 			manager.pushEvent.mockClear();
 
-			factory.send('id', { rootContextId: 'foo' });
+			expect(() =>
+				factory.send('id', { rootContextId: 'foo' })
+			).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
 			expect(logger.error).toHaveBeenCalledWith(
 				'Could not send event because: %o',

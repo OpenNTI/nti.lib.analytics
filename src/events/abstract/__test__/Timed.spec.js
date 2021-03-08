@@ -43,7 +43,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 			stub(logger, 'error');
-			factory.start();
+			expect(() => factory.start()).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
 
 			const resourceId = 'testResourceId1';
@@ -105,7 +105,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			stub(logger, 'error');
 
-			factory.stop('test-resource-id');
+			expect(() => factory.stop('test-resource-id')).toThrow();
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.stringContaining('Could not stop event'),
@@ -163,7 +163,7 @@ describe('Timed Analytic Event Tests', () => {
 
 			stub(logger, 'error');
 
-			factory.update('test-resource-id', {});
+			expect(() => factory.update('test-resource-id', {})).toThrow();
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.stringContaining('Could not update event'),
 				expect.anything(),
