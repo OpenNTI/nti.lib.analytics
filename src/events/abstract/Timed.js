@@ -45,6 +45,7 @@ export default class TimedAnalyticEvent extends Base {
 						getError(e)
 					);
 					reportError(e);
+					throw e;
 				}
 			},
 
@@ -70,6 +71,7 @@ export default class TimedAnalyticEvent extends Base {
 						getError(e)
 					);
 					reportError(e);
+					throw e;
 				}
 			},
 
@@ -95,6 +97,7 @@ export default class TimedAnalyticEvent extends Base {
 						getError(e)
 					);
 					reportError(e);
+					throw e;
 				}
 			},
 		};

@@ -43,6 +43,7 @@ export default class BaseAnalyticEvent {
 						getError(e)
 					);
 					reportError(e);
+					throw e;
 				}
 			},
 		};
