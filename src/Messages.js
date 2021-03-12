@@ -82,17 +82,17 @@ export default class Messages {
 
 			Hooks.triggerAfterBatchEvents(data);
 		} catch (e) {
-			logger.error(
-				'Failed to send analytic batch_event.\nError:',
-				e,
-				'\nData:',
-				data
-			);
-			reportError(e.error || e);
+			if (!reportError(e?.error || e)) {
+				logger.error(
+					'Failed to send analytic batch_event.\nError: %o\nData:%O',
+					e,
+					data
+				);
+			}
 
 			//if we failed because of no network connection
 			//add the events to the storage to try again later
-			if (e && e.statusCode === 0) {
+			if (e?.statusCode === 0) {
 				this.setPending(data);
 			}
 		} finally {
