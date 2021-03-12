@@ -88,7 +88,7 @@ export default class Messages {
 				'\nData:',
 				data
 			);
-			reportError(e);
+			reportError(e.error || e);
 
 			//if we failed because of no network connection
 			//add the events to the storage to try again later
