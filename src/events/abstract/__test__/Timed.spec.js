@@ -1,13 +1,15 @@
 /* eslint-env jest */
-import Logger from '@nti/util-logger';
+jest.mock('@nti/web-client', () => ({
+	reportError: jest.fn(),
+}));
+
 import { Date as DateUtils } from '@nti/lib-commons';
+import { reportError } from '@nti/web-client';
 
 import Timed from '../Timed';
 
 const { MockDate } = DateUtils;
 
-const logger = Logger.get('analytics:event');
-const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 const getSeconds = t => {
 	return new MockDate.OriginalDate(t).getTime() / 1000;
 };
@@ -42,7 +44,6 @@ describe('Timed Analytic Event Tests', () => {
 			};
 
 			const factory = TestImmediateEvent.makeFactory(manager);
-			stub(logger, 'error');
 			expect(() => factory.start()).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
 
@@ -103,15 +104,9 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			stub(logger, 'error');
-
 			expect(() => factory.stop('test-resource-id')).toThrow();
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.stringContaining('Could not stop event'),
-				expect.anything(),
-				expect.anything()
-			);
+			expect(reportError).toHaveBeenCalledWith(expect.anything());
 		});
 
 		test('Stop calls stop on the event it finds', () => {
@@ -161,14 +156,8 @@ describe('Timed Analytic Event Tests', () => {
 
 			const factory = TestImmediateEvent.makeFactory(manager);
 
-			stub(logger, 'error');
-
 			expect(() => factory.update('test-resource-id', {})).toThrow();
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.stringContaining('Could not update event'),
-				expect.anything(),
-				expect.anything()
-			);
+			expect(reportError).toHaveBeenCalledWith(expect.anything());
 		});
 
 		test('update calls updateData on the event it finds', () => {

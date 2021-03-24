@@ -1,10 +1,11 @@
 /* eslint-env jest */
-import Logger from '@nti/util-logger';
+jest.mock('@nti/web-client', () => ({
+	reportError: jest.fn(),
+}));
+
+import { reportError } from '@nti/web-client';
 
 import Base from '../Base';
-
-const logger = Logger.get('analytics:event');
-const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
 class TestImmediateEvent extends Base {
 	static EventType = 'test-immediate-event';
@@ -16,13 +17,6 @@ class TestNonImmediateEvent extends Base {
 }
 
 describe('Base Analytic Event', () => {
-	beforeEach(() => {
-		stub(logger, 'debug');
-		stub(logger, 'error');
-		stub(logger, 'info');
-		stub(logger, 'warn');
-	});
-
 	test('findActiveEvent predicate returns true only for the event with the same type and resourceId', () => {
 		const resourceId = 'testResource';
 		const isFinished = () => false;
@@ -71,10 +65,7 @@ describe('Base Analytic Event', () => {
 
 			expect(() => factory.send()).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
-			expect(logger.error).toHaveBeenCalledWith(
-				'Could not send event because: %o',
-				expect.anything()
-			);
+			expect(reportError).toHaveBeenCalledWith(expect.anything());
 
 			manager.pushEvent.mockClear();
 
@@ -82,10 +73,7 @@ describe('Base Analytic Event', () => {
 				factory.send('id', { rootContextId: 'foo' })
 			).toThrow();
 			expect(manager.pushEvent).not.toHaveBeenCalled();
-			expect(logger.error).toHaveBeenCalledWith(
-				'Could not send event because: %o',
-				expect.anything()
-			);
+			expect(reportError).toHaveBeenCalledWith(expect.anything());
 
 			manager.pushEvent.mockClear();
 

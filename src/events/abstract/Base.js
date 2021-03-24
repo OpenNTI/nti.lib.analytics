@@ -1,11 +1,5 @@
 import { reportError } from '@nti/web-client';
 import { defineProtected, updateValue } from '@nti/lib-commons';
-import Logger from '@nti/util-logger';
-
-import { getError } from '../../utils';
-
-const logger = Logger.get('analytics:event');
-
 export default class BaseAnalyticEvent {
 	static EventType = '';
 	static Immediate = true;
@@ -38,10 +32,6 @@ export default class BaseAnalyticEvent {
 
 					manager.pushEvent(event, this.Immediate);
 				} catch (e) {
-					logger.error(
-						'Could not send event because: %o',
-						getError(e)
-					);
 					reportError(e);
 					throw e;
 				}

@@ -2,8 +2,6 @@ import { reportError } from '@nti/web-client';
 import { defineProtected, updateValue } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
-import { getError } from '../../utils';
-
 import Base from './Base';
 
 const logger = Logger.get('analytics:event');
@@ -39,11 +37,6 @@ export default class TimedAnalyticEvent extends Base {
 
 					manager.pushEvent(event, Immediate);
 				} catch (e) {
-					logger.error(
-						'Could not start event for %s, because: %s',
-						resourceId,
-						getError(e)
-					);
 					reportError(e);
 					throw e;
 				}
@@ -65,11 +58,6 @@ export default class TimedAnalyticEvent extends Base {
 
 					event.stop(data);
 				} catch (e) {
-					logger.error(
-						'Could not stop event for %s, because: %s',
-						resourceId,
-						getError(e)
-					);
 					reportError(e);
 					throw e;
 				}
@@ -91,11 +79,6 @@ export default class TimedAnalyticEvent extends Base {
 
 					event.updateData(data);
 				} catch (e) {
-					logger.error(
-						'Could not update event for %s, because: %s',
-						resourceId,
-						getError(e)
-					);
 					reportError(e);
 					throw e;
 				}
