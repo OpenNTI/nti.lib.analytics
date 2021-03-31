@@ -4,12 +4,7 @@
   "author": "nextthought",
   "license": "UNLICENSED",
   "description": "Provides a javascript analytics framework for apps.",
-  "main": ".index.js",
-  "module": "src/index.js",
-  "files": [
-    ".index.js",
-    "src"
-  ],
+  "main": "src/index.js",
   "scripts": {
     "fix": "lib-scripts fix",
     "test": "lib-scripts test",
@@ -28,8 +23,7 @@
   "dependencies": {
     "@nti/lib-commons": "NextThought/nti.lib.commons",
     "@nti/util-logger": "NextThought/nti.util.logger",
-    "@nti/web-client": "NextThought/nti.web.client",
-    "esm": "^3.2.25"
+    "@nti/web-client": "NextThought/nti.web.client"
   },
   "devDependencies": {
     "@nti/lib-scripts": "^2.0.0"
