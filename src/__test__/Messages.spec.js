@@ -36,6 +36,7 @@ describe('Analytic Messages Test', () => {
 		afterEach(() => jest.useRealTimers());
 
 		test('sending one starts the timer, and pushes message', () => {
+			jest.spyOn(global, 'setTimeout');
 			const messages = new Messages();
 
 			messages.send({ id: 1 });
@@ -49,6 +50,7 @@ describe('Analytic Messages Test', () => {
 		});
 
 		test('sending two does not restart the timer, and pushes both', () => {
+			jest.spyOn(global, 'setTimeout');
 			const messages = new Messages();
 
 			messages.send({ id: 1 });
