@@ -11,6 +11,10 @@ export class Registry {
 		return this.getInstance().getEventsForManager(manager);
 	}
 
+	static getTypeForEvent(name) {
+		return this.getInstance().getTypeForEvent(name);
+	}
+
 	static registerEvent(...args) {
 		this.getInstance().registerEvent(...args);
 	}
@@ -27,14 +31,14 @@ export class Registry {
 		}
 	}
 
-	registerEvent(name, make) {
+	registerEvent(name, make, eventType) {
 		const existing = this.getEventFor(name);
 
 		if (existing) {
 			throw new Error('Overriding an existing event.');
 		}
 
-		this[Events].push({ name, make });
+		this[Events].push({ name, make, eventType });
 	}
 
 	getEventsForManager(manager) {
@@ -44,11 +48,23 @@ export class Registry {
 			return acc;
 		}, {});
 	}
+
+	getTypeForEvent(target) {
+		for (let event of this[Events]) {
+			if (event.name === target) {
+				return event.eventType;
+			}
+		}
+	}
 }
 
 export function register(name) {
 	const decorator = event => {
-		Registry.registerEvent(name, (...args) => event.makeFactory(...args));
+		Registry.registerEvent(
+			name,
+			(...args) => event.makeFactory(...args),
+			event.EventType
+		);
 	};
 
 	if (arguments.length > 1) {

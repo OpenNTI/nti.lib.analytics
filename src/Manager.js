@@ -8,7 +8,7 @@ import {
 	beginAnalyticsSession,
 	endAnalyticsSession,
 } from './Api';
-import { getEventsForManager } from './events/';
+import { getEventsForManager, getTypeForEvent } from './events/';
 import { Interval, toAnalyticsPath } from './utils';
 import Messages from './Messages';
 
@@ -20,6 +20,8 @@ const SLEEP_TIMEOUT = HEARTBEAT * 2;
 const registeredNames = {};
 
 export default class AnalyticsManager extends EventEmitter {
+	static getTypeForEvent = getTypeForEvent;
+
 	constructor(name, storage, service, heartbeatDelay = HEARTBEAT) {
 		super();
 

@@ -20,3 +20,7 @@ import './video/VideoSpeedChange';
 export function getEventsForManager(manager) {
 	return Registry.getEventsForManager(manager);
 }
+
+export function getTypeForEvent(name) {
+	return Registry.getTypeForEvent(name);
+}
