@@ -48,10 +48,8 @@ describe('Analytic API', () => {
 		test('if there is no link it rejects', () => {
 			const service = mockService(true);
 
-			expect(
-				beginAnalyticsSession(service)
-			).rejects.toThrowErrorMatchingInlineSnapshot(
-				`"No Link: analytics_session"`
+			expect(beginAnalyticsSession(service)).rejects.toThrowError(
+				/No Link: analytics_session/
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});
@@ -73,10 +71,8 @@ describe('Analytic API', () => {
 		test('rejects if not given an end_analytics_session link', () => {
 			const service = mockService(true);
 
-			expect(
-				endAnalyticsSession(service)
-			).rejects.toThrowErrorMatchingInlineSnapshot(
-				`"No Link: end_analytics_session"`
+			expect(endAnalyticsSession(service)).rejects.toThrowError(
+				/No Link: end_analytics_session/
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});
@@ -108,10 +104,8 @@ describe('Analytic API', () => {
 			const service = mockService(true);
 			const data = [{ id: 1 }, { id: 2 }];
 
-			expect(
-				sendBatchEvents(service, data)
-			).rejects.toThrowErrorMatchingInlineSnapshot(
-				`"No Link: batch_events"`
+			expect(sendBatchEvents(service, data)).rejects.toThrowError(
+				/No Link: batch_events/
 			);
 			expect(service.post).not.toHaveBeenCalled();
 		});

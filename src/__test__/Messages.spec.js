@@ -10,6 +10,12 @@ import { mockService, BATCH_EVENT } from './util';
 const logger = Logger.get('analytics:Messages');
 const stub = (a, b, c) => jest.spyOn(a, b).mockImplementation(c || (() => {}));
 
+jest.mock('@nti/web-client', () => ({
+	__esModule: true,
+	// default: jest.fn(),
+	reportError: jest.fn(),
+}));
+
 function mockStorage(items = {}) {
 	const storage = {
 		setItem: () => {},
